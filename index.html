@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>Phishing Website Detection using ML</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -17,7 +17,7 @@
     <style>
       /* ============================================
          PROFESSIONAL PHISHING DETECTION PRESENTATION
-         Enhanced Design System v2.0
+         Clean View (No Nav Controls) v3.1
          ============================================ */
 
       /* === ROOT & ANIMATIONS === */
@@ -49,11 +49,9 @@
         font-family: "Inter", sans-serif;
         color: var(--text-primary);
         margin: 0;
-        height: 100vh;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        overflow: hidden;
+        min-height: 100vh;
+        width: 100vw;
+        overflow-x: hidden;
         position: relative;
       }
 
@@ -80,11 +78,22 @@
         66% { transform: translate(-20px, 20px) scale(0.95); }
       }
 
+      /* === WRAPPER FOR SCALING === */
+      #scaler-container {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+      }
+
       /* === PRESENTATION CONTAINER === */
       #presentation-wrapper {
         width: 1280px;
         height: 720px;
         position: relative;
+        /* Default Desktop Styling */
         box-shadow: 
           0 50px 100px rgba(0, 0, 0, 0.8),
           0 0 80px rgba(0, 242, 255, 0.1),
@@ -93,12 +102,41 @@
         border-radius: 12px;
         overflow: hidden;
         z-index: 10;
+        flex-shrink: 0;
+        transform-origin: center center;
+        transition: transform 0.1s linear; 
+      }
+
+      /* === MOBILE SCROLL MODE OVERRIDES === */
+      body.mobile-mode {
+        overflow-y: auto !important;
+        height: auto !important;
+        display: block;
+      }
+
+      body.mobile-mode #scaler-container {
+        display: block;
+        height: auto;
+        overflow: visible;
+      }
+
+      body.mobile-mode #presentation-wrapper {
+        height: auto !important;
+        overflow: visible !important;
+        background: transparent;
+        box-shadow: none;
+        display: flex;
+        flex-direction: column;
+        gap: 60px; /* Gap between slides on mobile */
+        padding-bottom: 100px;
+        transform-origin: top left;
+        border-radius: 0;
       }
 
       /* === SLIDE CONTAINER === */
       .slide-container {
-        width: 100%;
-        height: 100%;
+        width: 1280px; /* Fixed internal width */
+        height: 720px; /* Fixed internal height */
         background: linear-gradient(135deg, var(--bg-darker) 0%, var(--bg-dark) 100%);
         position: absolute;
         top: 0;
@@ -110,20 +148,40 @@
         overflow: hidden;
       }
 
+      /* Desktop Active State */
       .slide-container.active {
         display: flex;
         animation: slideEnter 0.6s cubic-bezier(0.16, 1, 0.3, 1);
       }
 
+      /* Mobile Mode Slide Styling */
+      body.mobile-mode .slide-container {
+        position: relative !important; /* Stack them */
+        display: flex !important;
+        opacity: 0; /* Hidden by default for scroll reveal */
+        transition: opacity 0.8s ease, transform 0.8s ease;
+        transform: translateY(50px);
+        border-radius: 12px;
+        box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+        border: 1px solid rgba(255,255,255,0.05);
+      }
+
+      /* Mobile Scroll Reveal Active State */
+      body.mobile-mode .slide-container.scroll-active {
+        opacity: 1;
+        transform: translateY(0);
+        /* Re-trigger internal animations */
+        animation: none; 
+      }
+      
+      /* Re-trigger content fade in on scroll */
+      body.mobile-mode .slide-container.scroll-active .content-area {
+        animation: contentFadeIn 0.8s ease-out 0.2s both;
+      }
+
       @keyframes slideEnter {
-        from {
-          opacity: 0;
-          transform: translateY(20px) scale(0.98);
-        }
-        to {
-          opacity: 1;
-          transform: translateY(0) scale(1);
-        }
+        from { opacity: 0; transform: translateY(20px) scale(0.98); }
+        to { opacity: 1; transform: translateY(0) scale(1); }
       }
 
       /* Advanced Grid Background */
@@ -889,62 +947,6 @@
         opacity: 0.7;
       }
 
-
-      /* === NAVIGATION CONTROLS === */
-      #nav-controls {
-        position: fixed;
-        bottom: 35px;
-        left: 50%;
-        transform: translateX(-50%);
-        display: flex;
-        align-items: center;
-        gap: 25px;
-        z-index: 100;
-        background: rgba(10, 14, 39, 0.95);
-        padding: 12px 30px;
-        border-radius: 60px;
-        border: 1px solid var(--border-color);
-        backdrop-filter: blur(20px);
-        box-shadow: 
-          0 10px 40px rgba(0, 0, 0, 0.6),
-          0 0 20px rgba(0, 242, 255, 0.1);
-      }
-
-      .nav-btn {
-        background: transparent;
-        border: none;
-        color: var(--text-primary);
-        font-size: 24px;
-        cursor: pointer;
-        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-        display: flex;
-        align-items: center;
-        padding: 8px;
-        border-radius: 50%;
-      }
-
-      .nav-btn:hover:not(:disabled) {
-        color: var(--primary-cyan);
-        transform: scale(1.2);
-        background: rgba(0, 242, 255, 0.1);
-      }
-
-      .nav-btn:disabled {
-        color: var(--border-color);
-        cursor: not-allowed;
-        opacity: 0.3;
-      }
-
-      #slide-counter {
-        font-family: "JetBrains Mono", monospace;
-        color: var(--text-secondary);
-        font-size: 16px;
-        min-width: 140px;
-        text-align: center;
-        font-weight: 600;
-        letter-spacing: 0.05em;
-      }
-
       #progress-bar {
         position: fixed;
         bottom: 0;
@@ -956,19 +958,9 @@
         z-index: 101;
         box-shadow: 0 0 20px rgba(0, 242, 255, 0.6);
       }
-
-      /* === RESPONSIVE === */
-      /* Desktop Scaling */
-      @media (max-width: 1300px) and (min-width: 801px) {
-        #presentation-wrapper {
-          transform: scale(0.8);
-        }
-      }
-
-      @media (max-width: 1000px) and (min-width: 801px) {
-        #presentation-wrapper {
-          transform: scale(0.65);
-        }
+      
+      body.mobile-mode #progress-bar {
+        display: none;
       }
 
       /* === SPECIAL EFFECTS === */
@@ -1030,451 +1022,359 @@
         color: var(--accent-pink);
         border: 1px solid var(--accent-pink);
       }
-
-      /* =========================================
-         MOBILE SCROLLABLE VIEW (Landscape Cards)
-         ========================================= */
-      @media (max-width: 800px) {
-        body {
-            height: auto;
-            min-height: 100vh;
-            overflow-y: auto;
-            align-items: flex-start;
-            padding-top: 20px;
-            padding-bottom: 20px;
-        }
-
-        #presentation-wrapper {
-            width: 100%;
-            height: auto;
-            box-shadow: none;
-            background: transparent;
-            border-radius: 0;
-            overflow: visible;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 20px;
-            transform: none !important;
-        }
-
-        .slide-container {
-            display: flex !important;
-            position: relative;
-            width: 95%;
-            aspect-ratio: 16/9; 
-            height: auto;
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            border: 1px solid rgba(255,255,255,0.1);
-            zoom: 0.45;
-            margin-bottom: 20px;
-            opacity: 1;
-        }
-        
-        @supports not (zoom: 1) {
-            .slide-container {
-                transform: scale(0.45);
-                transform-origin: top center;
-                margin-bottom: -350px;
-                width: 1280px;
-                left: 50%;
-                margin-left: -640px;
-            }
-        }
-
-        #nav-controls, #progress-bar {
-            display: none;
-        }
-        
-        /* Remove desktop entrance animations on mobile to prevent conflicts */
-        .slide-container.active {
-            animation: none;
-        }
-        .content-area, .slide-title, .styled-list li, .step {
-            animation: none !important; /* Reset desktop keyframes */
-        }
-
-        /* --- MOBILE SCROLL ANIMATIONS --- */
-        /* These classes are added via JS below */
-        
-        .scroll-trigger {
-            opacity: 0;
-            transform: translateY(40px);
-            transition: opacity 0.6s cubic-bezier(0.2, 0.8, 0.2, 1), transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
-        }
-
-        .scroll-trigger.in-view {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        /* Staggered Delays for lists and grids */
-        .team-card.scroll-trigger:nth-child(1) { transition-delay: 0.05s; }
-        .team-card.scroll-trigger:nth-child(2) { transition-delay: 0.1s; }
-        .team-card.scroll-trigger:nth-child(3) { transition-delay: 0.15s; }
-        .team-card.scroll-trigger:nth-child(4) { transition-delay: 0.2s; }
-        .team-card.scroll-trigger:nth-child(5) { transition-delay: 0.25s; }
-
-        .styled-list li.scroll-trigger:nth-child(1) { transition-delay: 0.1s; }
-        .styled-list li.scroll-trigger:nth-child(2) { transition-delay: 0.2s; }
-        .styled-list li.scroll-trigger:nth-child(3) { transition-delay: 0.3s; }
-        .styled-list li.scroll-trigger:nth-child(4) { transition-delay: 0.4s; }
-      }
-
     </style>
   </head>
   <body>
-    <div id="presentation-wrapper">
-      <div class="slide-container active" id="slide1">
-        <div class="content-area" style="text-align: center; justify-content: center;">
-          <div style="margin-bottom: 40px;">
-            <i class="fa-solid fa-shield-halved" style="font-size: 120px; color: var(--primary-cyan); filter: drop-shadow(0 0 30px rgba(0, 242, 255, 0.6)); animation: iconFloat 6s ease-in-out infinite;"></i>
-          </div>
-          <h1 style="margin-bottom: 20px;">
-            Phishing Website Detection<br/>
-            <span style="font-size: 0.8em;">Using Machine Learning</span>
-          </h1>
-          <div style="margin: 30px 0;">
-            <span class="badge badge-cyan">Machine Learning</span>
-            <span class="badge badge-purple">React</span>
-            <span class="badge badge-pink">Flask API</span>
-          </div>
-          <p style="font-size: 20px; color: var(--primary-purple); font-weight: 600; margin-top: 30px; letter-spacing: 0.15em; text-transform: uppercase;">
-            B.Tech CSE - AIML • 2025-2026
-          </p>
-          <div style="margin-top: 50px; color: var(--text-secondary); font-size: 16px;">
-            <strong style="color: var(--text-primary);">Team:</strong> Akarsh Raj • Arnav Raj • Alok Kumar Das • Nirbhay Anand • Shubhra Dutt<br/>
-            <span style="opacity: 0.7;">Haldia Institute of Technology | Dept. of CSE-AIML</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="slide-container" id="slide2">
-        <h2 class="slide-title">Team & Roles</h2>
-        <div class="content-area">
-          <div class="team-grid">
-            <div class="team-card">
-              <i class="fa-solid fa-brain"></i>
-              <span class="role">ML Scientist</span>
-              <h3>Akarsh Raj</h3>
-              <p style="font-size: 13px; margin: 8px 0; line-height: 1.4; color: var(--text-secondary);">
-                "The brain behind the bot. Trains the model to sniff out scams."
-              </p>
-              <span class="id">10330823006</span>
+    <div id="scaler-container">
+      <div id="presentation-wrapper">
+        <div class="slide-container active" id="slide1">
+          <div class="content-area" style="text-align: center; justify-content: center;">
+            <div style="margin-bottom: 40px;">
+              <i class="fa-solid fa-shield-halved" style="font-size: 120px; color: var(--primary-cyan); filter: drop-shadow(0 0 30px rgba(0, 242, 255, 0.6)); animation: iconFloat 6s ease-in-out infinite;"></i>
             </div>
-            <div class="team-card">
-              <i class="fa-solid fa-database"></i>
-              <span class="role">Data Engineer</span>
-              <h3>Arnav Raj</h3>
-              <p style="font-size: 13px; margin: 8px 0; line-height: 1.4; color: var(--text-secondary);">
-                "The pipeline pro. Feeds the beast with clean, structured data."
-              </p>
-              <span class="id">10330823025</span>
+            <h1 style="margin-bottom: 20px;">
+              Phishing Website Detection<br/>
+              <span style="font-size: 0.8em;">Using Machine Learning</span>
+            </h1>
+            <div style="margin: 30px 0;">
+              <span class="badge badge-cyan">Machine Learning</span>
+              <span class="badge badge-purple">React</span>
+              <span class="badge badge-pink">Flask API</span>
             </div>
-            <div class="team-card">
-              <i class="fa-solid fa-palette"></i>
-              <span class="role">Frontend Dev</span>
-              <h3>Alok Kumar Das</h3>
-              <p style="font-size: 13px; margin: 8px 0; line-height: 1.4; color: var(--text-secondary);">
-                "The pixel perfectionist. Cooked up a UI to make sure the anti-scam tech drips hard."
-              </p>
-              <span class="id">10330823010</span>
-            </div>
-            <div class="team-card">
-              <i class="fa-solid fa-rocket"></i>
-              <span class="role">DevOps Eng.</span>
-              <h3>Nirbhay Anand</h3>
-              <p style="font-size: 13px; margin: 8px 0; line-height: 1.4; color: var(--text-secondary);">
-                "The deployment maestro. Keeps the servers running and the code shipping."
-              </p>
-              <span class="id">10330823062</span>
-            </div>
-            <div class="team-card">
-              <i class="fa-brands fa-python"></i>
-              <span class="role">Backend Dev</span>
-              <h3>Shubhra Dutt</h3>
-              <p style="font-size: 13px; margin: 8px 0; line-height: 1.4; color: var(--text-secondary);">
-                "The engine builder. Connects the dots and powers the API."
-              </p>
-              <span class="id">10330823100</span>
-            </div>
-          </div>
-          <div style="text-align: center; margin-top: 30px; opacity: 0.1;">
-            <i class="fa-solid fa-network-wired icon-decoration" style="font-size: 140px;"></i>
-          </div>
-        </div>
-      </div>
-
-      <div class="slide-container" id="slide3" style="padding: 40px 80px;">
-        <h2 class="slide-title">Abstract</h2>
-        <div class="content-area">
-          <div class="two-column" style="gap: 30px;">
-            <div>
-              <ul class="styled-list">
-                <li style="margin-bottom: 10px; font-size: 16px;">
-                  <strong>System Overview:</strong> A Flask-based web application leveraging supervised machine learning for real-time phishing URL detection with 93.6% accuracy.
-                </li>
-                <li style="margin-bottom: 10px; font-size: 16px;">
-                  <strong>Problem Domain:</strong> Addresses escalating phishing threats by classifying URLs as benign or malicious using 12 extracted features.
-                </li>
-                <li style="margin-bottom: 10px; font-size: 16px;">
-                  <strong>Key Components:</strong> Advanced feature engineering from URL attributes, model inference via REST API, and intuitive user interface.
-                </li>
-                <li style="margin-bottom: 10px; font-size: 16px;">
-                  <strong>Technical Stack:</strong> Employs Scikit-learn, Pandas, and Flask for a scalable, production-ready cybersecurity ML pipeline.
-                </li>
-              </ul>
-            </div>
-            <div class="image-wrapper">
-              <div style="padding: 40px; text-align: center;">
-                <div style="margin-bottom: 20px;">
-                  <i class="fa-solid fa-link" style="font-size: 40px; color: var(--primary-cyan);"></i>
-                  <p style="margin-top: 10px; font-size: 14px;"><strong>Input URL</strong></p>
-                </div>
-                <i class="fa-solid fa-arrow-down" style="font-size: 24px; color: var(--primary-purple); margin: 15px 0;"></i>
-                <div style="margin: 20px 0;">
-                  <i class="fa-solid fa-gears" style="font-size: 40px; color: var(--primary-cyan);"></i>
-                  <p style="margin-top: 10px; font-size: 14px;"><strong>ML Processing</strong></p>
-                </div>
-                <i class="fa-solid fa-arrow-down" style="font-size: 24px; color: var(--primary-purple); margin: 15px 0;"></i>
-                <div style="margin-top: 20px;">
-                  <i class="fa-solid fa-check-circle" style="font-size: 40px; color: var(--success);"></i>
-                  <p style="margin-top: 10px; font-size: 14px;"><strong>Prediction Result</strong></p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="slide-container" id="slide4">
-        <h2 class="slide-title">Problem Statement</h2>
-        <div class="content-area">
-          <div class="two-column">
-            <div>
-              <div style="margin-bottom: 30px;">
-                <h3 style="color: var(--danger); font-size: 24px; margin-bottom: 15px;">
-                  <i class="fa-solid fa-exclamation-triangle"></i> Rising Threat
-                </h3>
-                <p>Phishing attacks surged by <strong>65% in 2023</strong>, exploiting URL manipulation to deceive users and steal sensitive data.</p>
-              </div>
-              <div style="margin-bottom: 30px;">
-                <h3 style="color: var(--warning); font-size: 24px; margin-bottom: 15px;">
-                  <i class="fa-solid fa-shield-virus"></i> Detection Challenges
-                </h3>
-                <p>Static blacklists fail against zero-day URLs. Manual inspection is unscalable for enterprise-level traffic volumes.</p>
-              </div>
-              <div>
-                <h3 style="color: var(--success); font-size: 24px; margin-bottom: 15px;">
-                  <i class="fa-solid fa-robot"></i> Need for Automation
-                </h3>
-                <p>ML-based classification analyzes granular features like entropy, domain age, and SSL legitimacy for real-time detection.</p>
-              </div>
-            </div>
-            <div class="image-wrapper" style="background: rgba(255, 255, 255, 0.95);">
-              <div class="phishing-mock">
-                <div class="phishing-header">
-                  <strong>From:</strong> Security Team &lt;<span class="suspicious-highlight" data-reason="Typosquatting: 'pay-pal' instead of 'paypal'">support@pay-pal-security.net</span>&gt;<br/>
-                  <strong>To:</strong> valued.customer@example.com
-                </div>
-                <div class="phishing-subject">
-                  🚨 Urgent: Your account has been limited
-                </div>
-                <div class="phishing-body">
-                  Dear Valued Customer,<br/><br/>
-                  We detected <strong>unusual activity</strong> on your account. To prevent unauthorized access, we have temporarily restricted your account features.<br/><br/>
-                  Please verify your identity immediately:<br/>
-                  <a href="#" class="phishing-btn" onclick="return false;">Secure Login Now</a>
-                  <br/><br/>
-                  <span style="font-size: 11px; color: #999;">
-                    Actual link: <span class="suspicious-highlight" data-reason="Suspicious IP address instead of legitimate domain">http://192.168.1.104/verify/auth.php?token=xj29dk</span>
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="slide-container" id="slide5">
-        <h2 class="slide-title">Literature Review</h2>
-        <div class="content-area">
-          <p style="margin-bottom: 35px; font-size: 20px;">
-            <strong>Comparative Analysis</strong> of Detection Methodologies:
-          </p>
-          <div class="bar-track">
-            <div class="bar-fill" style="width: 70%;">
-              Blacklist Methods (70-80% Accuracy)
-            </div>
-          </div>
-          <div class="bar-track">
-            <div class="bar-fill" style="width: 85%; background: linear-gradient(90deg, var(--warning), var(--primary-purple));">
-              Heuristic-Based Approaches (85%)
-            </div>
-          </div>
-          <div class="bar-track">
-            <div class="bar-fill" style="width: 93.6%;">
-              ML-Based Solutions (93%+ Accuracy)
-            </div>
-          </div>
-          <div style="margin-top: 50px; padding: 25px; background: var(--bg-card); border-radius: 12px; border-left: 4px solid var(--primary-cyan);">
-            <p style="font-size: 18px;">
-              <strong>Research Gap Addressed:</strong> Our system bridges the gap between offline academic models and real-time production inference by integrating dynamic feature engineering directly into the API layer, enabling <strong>sub-500ms response times</strong>.
+            <p style="font-size: 20px; color: var(--primary-purple); font-weight: 600; margin-top: 30px; letter-spacing: 0.15em; text-transform: uppercase;">
+              B.Tech CSE - AIML • 2025-2026
             </p>
+            <div style="margin-top: 50px; color: var(--text-secondary); font-size: 16px;">
+              <strong style="color: var(--text-primary);">Team:</strong> Akarsh Raj • Arnav Raj • Alok Kumar Das • Nirbhay Anand • Shubhra Dutt<br/>
+              <span style="opacity: 0.7;">Haldia Institute of Technology | Dept. of CSE-AIML</span>
+            </div>
           </div>
         </div>
-      </div>
 
-      <div class="slide-container" id="slide6">
-        <h2 class="slide-title">System Architecture</h2>
-        <div class="content-area">
-          <div class="two-column">
-            <div class="flow-container">
-              <div class="flow-node node-user">
-                <i class="fa-solid fa-user"></i>
-                <span>User Input</span>
-              </div>
-              <i class="fa-solid fa-arrow-down flow-arrow-vertical"></i>
-              
-              <div class="flow-node node-frontend">
-                <i class="fa-solid fa-desktop"></i>
-                <span>Frontend UI</span>
-              </div>
-              <i class="fa-solid fa-arrow-down flow-arrow-vertical"></i>
-              
-              <div class="flow-node node-api">
-                <i class="fa-solid fa-server"></i>
-                <span>Flask API</span>
-              </div>
-              <i class="fa-solid fa-arrow-down flow-arrow-vertical"></i>
-              
-              <div class="flow-node node-model">
+        <div class="slide-container" id="slide2">
+          <h2 class="slide-title">Team & Roles</h2>
+          <div class="content-area">
+            <div class="team-grid">
+              <div class="team-card">
                 <i class="fa-solid fa-brain"></i>
-                <span>ML Model</span>
+                <span class="role">ML Scientist</span>
+                <h3>Akarsh Raj</h3>
+                <p style="font-size: 13px; margin: 8px 0; line-height: 1.4; color: var(--text-secondary);">
+                  "The brain behind the bot. Trains the model to sniff out scams."
+                </p>
+                <span class="id">10330823006</span>
               </div>
-              <i class="fa-solid fa-arrow-down flow-arrow-vertical"></i>
-              
-              <div class="flow-node node-response">
-                <i class="fa-solid fa-envelope-open-text"></i>
-                <span>JSON Response</span>
+              <div class="team-card">
+                <i class="fa-solid fa-database"></i>
+                <span class="role">Data Engineer</span>
+                <h3>Arnav Raj</h3>
+                <p style="font-size: 13px; margin: 8px 0; line-height: 1.4; color: var(--text-secondary);">
+                  "The pipeline pro. Feeds the beast with clean, structured data."
+                </p>
+                <span class="id">10330823025</span>
+              </div>
+              <div class="team-card">
+                <i class="fa-solid fa-palette"></i>
+                <span class="role">Frontend Dev</span>
+                <h3>Alok Kumar Das</h3>
+                <p style="font-size: 13px; margin: 8px 0; line-height: 1.4; color: var(--text-secondary);">
+                  "The pixel perfectionist. Cooked up a UI to make sure the anti-scam tech drips hard."
+                </p>
+                <span class="id">10330823010</span>
+              </div>
+              <div class="team-card">
+                <i class="fa-solid fa-rocket"></i>
+                <span class="role">DevOps Eng.</span>
+                <h3>Nirbhay Anand</h3>
+                <p style="font-size: 13px; margin: 8px 0; line-height: 1.4; color: var(--text-secondary);">
+                  "The deployment maestro. Keeps the servers running and the code shipping."
+                </p>
+                <span class="id">10330823062</span>
+              </div>
+              <div class="team-card">
+                <i class="fa-brands fa-python"></i>
+                <span class="role">Backend Dev</span>
+                <h3>Shubhra Dutt</h3>
+                <p style="font-size: 13px; margin: 8px 0; line-height: 1.4; color: var(--text-secondary);">
+                  "The engine builder. Connects the dots and powers the API."
+                </p>
+                <span class="id">10330823100</span>
               </div>
             </div>
-            
-            <div>
-              <ul class="styled-list">
-                <li>
-                  <strong>User Interaction:</strong> Responsive frontend captures URL input via modern web form with client-side validation.
-                </li>
-                <li>
-                  <strong>API Layer:</strong> Flask application handles POST requests and routes to feature extraction pipeline.
-                </li>
-                <li>
-                  <strong>Processing Pipeline:</strong> Extracts 12 features including domain age, SSL status, URL entropy, and special character counts.
-                </li>
-                <li>
-                  <strong>Security Measures:</strong> Input sanitization, rate limiting, HTTPS enforcement, and CORS protection.
-                </li>
-              </ul>
+            <div style="text-align: center; margin-top: 30px; opacity: 0.1;">
+              <i class="fa-solid fa-network-wired icon-decoration" style="font-size: 140px;"></i>
             </div>
           </div>
         </div>
-      </div>
 
-      <div class="slide-container" id="slide7">
-        <h2 class="slide-title">Dataset & Feature Engineering</h2>
-        <div class="content-area">
-          <p style="margin-bottom: 25px;">
-            <strong>Dataset Source:</strong> UCI Phishing Websites Dataset with <strong>12 engineered features</strong>
-          </p>
-          <table>
-            <thead>
-              <tr>
-                <th>Feature Name</th>
-                <th>Technical Implementation</th>
-                <th>Anomaly Threshold</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>URL Length</td>
-                <td><span class="tech-code">len(url)</span></td>
-                <td>&gt; 75 characters</td>
-              </tr>
-              <tr>
-                <td>Special Characters</td>
-                <td><span class="tech-code">re.findall(r'[@\-//]', url)</span></td>
-                <td>Excessive counts (>5)</td>
-              </tr>
-              <tr>
-                <td>HTTPS Status</td>
-                <td><span class="tech-code">urlparse(url).scheme</span></td>
-                <td>Binary 0 (Non-secure)</td>
-              </tr>
-              <tr>
-                <td>Domain Entropy</td>
-                <td><span class="tech-code">Shannon entropy calculation</span></td>
-                <td>Random string detection</td>
-              </tr>
-              <tr>
-                <td>Subdomain Count</td>
-                <td><span class="tech-code">domain.count('.')</span></td>
-                <td>&gt; 3 subdomains</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      <div class="slide-container" id="slide8">
-        <h2 class="slide-title">Machine Learning Model</h2>
-        <div class="content-area">
-          <div class="two-column">
-            <div>
-              <div style="margin-bottom: 30px;">
-                <h3 style="font-size: 22px; color: var(--primary-cyan); margin-bottom: 15px;">
-                  <i class="fa-solid fa-chart-line"></i> Algorithm Selection
-                </h3>
-                <p><strong>Gradient Boosting Classifier</strong> (Scikit-learn) selected for sequential error reduction and superior performance on imbalanced datasets.</p>
+        <div class="slide-container" id="slide3" style="padding: 40px 80px;">
+          <h2 class="slide-title">Abstract</h2>
+          <div class="content-area">
+            <div class="two-column" style="gap: 30px;">
+              <div>
+                <ul class="styled-list">
+                  <li style="margin-bottom: 10px; font-size: 16px;">
+                    <strong>System Overview:</strong> A Flask-based web application leveraging supervised machine learning for real-time phishing URL detection with 93.6% accuracy.
+                  </li>
+                  <li style="margin-bottom: 10px; font-size: 16px;">
+                    <strong>Problem Domain:</strong> Addresses escalating phishing threats by classifying URLs as benign or malicious using 12 extracted features.
+                  </li>
+                  <li style="margin-bottom: 10px; font-size: 16px;">
+                    <strong>Key Components:</strong> Advanced feature engineering from URL attributes, model inference via REST API, and intuitive user interface.
+                  </li>
+                  <li style="margin-bottom: 10px; font-size: 16px;">
+                    <strong>Technical Stack:</strong> Employs Scikit-learn, Pandas, and Flask for a scalable, production-ready cybersecurity ML pipeline.
+                  </li>
+                </ul>
               </div>
-              <div style="margin-bottom: 30px;">
-                <h3 style="font-size: 22px; color: var(--primary-purple); margin-bottom: 15px;">
-                  <i class="fa-solid fa-flask"></i> Training Process
-                </h3>
-                <p><strong>3-fold Cross-validation</strong> with GridSearchCV for hyperparameter optimization. Training set: 80%, Test set: 20%.</p>
+              <div class="image-wrapper">
+                <div style="padding: 40px; text-align: center;">
+                  <div style="margin-bottom: 20px;">
+                    <i class="fa-solid fa-link" style="font-size: 40px; color: var(--primary-cyan);"></i>
+                    <p style="margin-top: 10px; font-size: 14px;"><strong>Input URL</strong></p>
+                  </div>
+                  <i class="fa-solid fa-arrow-down" style="font-size: 24px; color: var(--primary-purple); margin: 15px 0;"></i>
+                  <div style="margin: 20px 0;">
+                    <i class="fa-solid fa-gears" style="font-size: 40px; color: var(--primary-cyan);"></i>
+                    <p style="margin-top: 10px; font-size: 14px;"><strong>ML Processing</strong></p>
+                  </div>
+                  <i class="fa-solid fa-arrow-down" style="font-size: 24px; color: var(--primary-purple); margin: 15px 0;"></i>
+                  <div style="margin-top: 20px;">
+                    <i class="fa-solid fa-check-circle" style="font-size: 40px; color: var(--success);"></i>
+                    <p style="margin-top: 10px; font-size: 14px;"><strong>Prediction Result</strong></p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="slide-container" id="slide4">
+          <h2 class="slide-title">Problem Statement</h2>
+          <div class="content-area">
+            <div class="two-column">
+              <div>
+                <div style="margin-bottom: 30px;">
+                  <h3 style="color: var(--danger); font-size: 24px; margin-bottom: 15px;">
+                    <i class="fa-solid fa-exclamation-triangle"></i> Rising Threat
+                  </h3>
+                  <p>Phishing attacks surged by <strong>65% in 2023</strong>, exploiting URL manipulation to deceive users and steal sensitive data.</p>
+                </div>
+                <div style="margin-bottom: 30px;">
+                  <h3 style="color: var(--warning); font-size: 24px; margin-bottom: 15px;">
+                    <i class="fa-solid fa-shield-virus"></i> Detection Challenges
+                  </h3>
+                  <p>Static blacklists fail against zero-day URLs. Manual inspection is unscalable for enterprise-level traffic volumes.</p>
+                </div>
+                <div>
+                  <h3 style="color: var(--success); font-size: 24px; margin-bottom: 15px;">
+                    <i class="fa-solid fa-robot"></i> Need for Automation
+                  </h3>
+                  <p>ML-based classification analyzes granular features like entropy, domain age, and SSL legitimacy for real-time detection.</p>
+                </div>
+              </div>
+              <div class="image-wrapper" style="background: rgba(255, 255, 255, 0.95);">
+                <div class="phishing-mock">
+                  <div class="phishing-header">
+                    <strong>From:</strong> Security Team &lt;<span class="suspicious-highlight" data-reason="Typosquatting: 'pay-pal' instead of 'paypal'">support@pay-pal-security.net</span>&gt;<br/>
+                    <strong>To:</strong> valued.customer@example.com
+                  </div>
+                  <div class="phishing-subject">
+                    🚨 Urgent: Your account has been limited
+                  </div>
+                  <div class="phishing-body">
+                    Dear Valued Customer,<br/><br/>
+                    We detected <strong>unusual activity</strong> on your account. To prevent unauthorized access, we have temporarily restricted your account features.<br/><br/>
+                    Please verify your identity immediately:<br/>
+                    <a href="#" class="phishing-btn" onclick="return false;">Secure Login Now</a>
+                    <br/><br/>
+                    <span style="font-size: 11px; color: #999;">
+                      Actual link: <span class="suspicious-highlight" data-reason="Suspicious IP address instead of legitimate domain">http://192.168.1.104/verify/auth.php?token=xj29dk</span>
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="slide-container" id="slide5">
+          <h2 class="slide-title">Literature Review</h2>
+          <div class="content-area">
+            <p style="margin-bottom: 35px; font-size: 20px;">
+              <strong>Comparative Analysis</strong> of Detection Methodologies:
+            </p>
+            <div class="bar-track">
+              <div class="bar-fill" style="width: 70%;">
+                Blacklist Methods (70-80% Accuracy)
+              </div>
+            </div>
+            <div class="bar-track">
+              <div class="bar-fill" style="width: 85%; background: linear-gradient(90deg, var(--warning), var(--primary-purple));">
+                Heuristic-Based Approaches (85%)
+              </div>
+            </div>
+            <div class="bar-track">
+              <div class="bar-fill" style="width: 93.6%;">
+                ML-Based Solutions (93%+ Accuracy)
+              </div>
+            </div>
+            <div style="margin-top: 50px; padding: 25px; background: var(--bg-card); border-radius: 12px; border-left: 4px solid var(--primary-cyan);">
+              <p style="font-size: 18px;">
+                <strong>Research Gap Addressed:</strong> Our system bridges the gap between offline academic models and real-time production inference by integrating dynamic feature engineering directly into the API layer, enabling <strong>sub-500ms response times</strong>.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="slide-container" id="slide6">
+          <h2 class="slide-title">System Architecture</h2>
+          <div class="content-area">
+            <div class="two-column">
+              <div class="flow-container">
+                <div class="flow-node node-user">
+                  <i class="fa-solid fa-user"></i>
+                  <span>User Input</span>
+                </div>
+                <i class="fa-solid fa-arrow-down flow-arrow-vertical"></i>
+                
+                <div class="flow-node node-frontend">
+                  <i class="fa-solid fa-desktop"></i>
+                  <span>Frontend UI</span>
+                </div>
+                <i class="fa-solid fa-arrow-down flow-arrow-vertical"></i>
+                
+                <div class="flow-node node-api">
+                  <i class="fa-solid fa-server"></i>
+                  <span>Flask API</span>
+                </div>
+                <i class="fa-solid fa-arrow-down flow-arrow-vertical"></i>
+                
+                <div class="flow-node node-model">
+                  <i class="fa-solid fa-brain"></i>
+                  <span>ML Model</span>
+                </div>
+                <i class="fa-solid fa-arrow-down flow-arrow-vertical"></i>
+                
+                <div class="flow-node node-response">
+                  <i class="fa-solid fa-envelope-open-text"></i>
+                  <span>JSON Response</span>
+                </div>
+              </div>
+              
+              <div>
+                <ul class="styled-list">
+                  <li>
+                    <strong>User Interaction:</strong> Responsive frontend captures URL input via modern web form with client-side validation.
+                  </li>
+                  <li>
+                    <strong>API Layer:</strong> Flask application handles POST requests and routes to feature extraction pipeline.
+                  </li>
+                  <li>
+                    <strong>Processing Pipeline:</strong> Extracts 12 features including domain age, SSL status, URL entropy, and special character counts.
+                  </li>
+                  <li>
+                    <strong>Security Measures:</strong> Input sanitization, rate limiting, HTTPS enforcement, and CORS protection.
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="slide-container" id="slide7">
+          <h2 class="slide-title">Dataset & Feature Engineering</h2>
+          <div class="content-area">
+            <p style="margin-bottom: 25px;">
+              <strong>Dataset Source:</strong> UCI Phishing Websites Dataset with <strong>12 engineered features</strong>
+            </p>
+            <table>
+              <thead>
+                <tr>
+                  <th>Feature Name</th>
+                  <th>Technical Implementation</th>
+                  <th>Anomaly Threshold</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>URL Length</td>
+                  <td><span class="tech-code">len(url)</span></td>
+                  <td>&gt; 75 characters</td>
+                </tr>
+                <tr>
+                  <td>Special Characters</td>
+                  <td><span class="tech-code">re.findall(r'[@\-//]', url)</span></td>
+                  <td>Excessive counts (>5)</td>
+                </tr>
+                <tr>
+                  <td>HTTPS Status</td>
+                  <td><span class="tech-code">urlparse(url).scheme</span></td>
+                  <td>Binary 0 (Non-secure)</td>
+                </tr>
+                <tr>
+                  <td>Domain Entropy</td>
+                  <td><span class="tech-code">Shannon entropy calculation</span></td>
+                  <td>Random string detection</td>
+                </tr>
+                <tr>
+                  <td>Subdomain Count</td>
+                  <td><span class="tech-code">domain.count('.')</span></td>
+                  <td>&gt; 3 subdomains</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="slide-container" id="slide8">
+          <h2 class="slide-title">Machine Learning Model</h2>
+          <div class="content-area">
+            <div class="two-column">
+              <div>
+                <div style="margin-bottom: 30px;">
+                  <h3 style="font-size: 22px; color: var(--primary-cyan); margin-bottom: 15px;">
+                    <i class="fa-solid fa-chart-line"></i> Algorithm Selection
+                  </h3>
+                  <p><strong>Gradient Boosting Classifier</strong> (Scikit-learn) selected for sequential error reduction and superior performance on imbalanced datasets.</p>
+                </div>
+                <div style="margin-bottom: 30px;">
+                  <h3 style="font-size: 22px; color: var(--primary-purple); margin-bottom: 15px;">
+                    <i class="fa-solid fa-flask"></i> Training Process
+                  </h3>
+                  <p><strong>3-fold Cross-validation</strong> with GridSearchCV for hyperparameter optimization. Training set: 80%, Test set: 20%.</p>
+                </div>
+                <div>
+                  <h3 style="font-size: 22px; color: var(--accent-pink); margin-bottom: 15px;">
+                    <i class="fa-solid fa-save"></i> Model Serialization
+                  </h3>
+                  <p>Used <strong>Pickle and Dill</strong> libraries for secure model serialization, ensuring version compatibility and deployment stability.</p>
+                </div>
               </div>
               <div>
-                <h3 style="font-size: 22px; color: var(--accent-pink); margin-bottom: 15px;">
-                  <i class="fa-solid fa-save"></i> Model Serialization
-                </h3>
-                <p>Used <strong>Pickle and Dill</strong> libraries for secure model serialization, ensuring version compatibility and deployment stability.</p>
-              </div>
-            </div>
-            <div>
-              <div class="metric-card" style="margin-bottom: 20px;">
-                <div class="metric-value">93.6%</div>
-                <p style="color: var(--text-secondary);">Model Accuracy</p>
-              </div>
-              <div class="bar-track">
-                <div class="bar-fill" style="width: 93.6%;">
-                  Accuracy
+                <div class="metric-card" style="margin-bottom: 20px;">
+                  <div class="metric-value">93.6%</div>
+                  <p style="color: var(--text-secondary);">Model Accuracy</p>
+                </div>
+                <div class="bar-track">
+                  <div class="bar-fill" style="width: 93.6%;">
+                    Accuracy
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
 
-      <div class="slide-container" id="slide9">
-        <h2 class="slide-title">Backend Logic</h2>
-        <div class="content-area">
-            <div class="code-window">
-                <div class="window-header">
-                    <div class="w-dot red"></div><div class="w-dot yellow"></div><div class="w-dot green"></div>
-                    <div style="margin-left: 10px; font-size: 12px; color: #64748b;">app.py</div>
-                </div>
-                <div class="code-content">
+        <div class="slide-container" id="slide9">
+          <h2 class="slide-title">Backend Logic</h2>
+          <div class="content-area">
+              <div class="code-window">
+                  <div class="window-header">
+                      <div class="w-dot red"></div><div class="w-dot yellow"></div><div class="w-dot green"></div>
+                      <div style="margin-left: 10px; font-size: 12px; color: #64748b;">app.py</div>
+                  </div>
+                  <div class="code-content">
 <span class="keyword">@app.route</span>(<span class="string">'/predict'</span>, methods=[<span class="string">'POST'</span>])
 <span class="keyword">def</span> <span class="function">predict</span>():
     data = request.get_json()
@@ -1503,175 +1403,176 @@
         <span class="string">"prediction"</span>: result,
         <span class="string">"confidence"</span>: round(confidence, 2)
     })
+                  </div>
+              </div>
+          </div>
+        </div>
+
+        <div class="slide-container" id="slide10" style="padding: 40px 80px;">
+          <h2 class="slide-title">CI/CD & Deployment</h2>
+          <div class="content-area">
+            <div class="two-column" style="gap: 30px;">
+              <div style="text-align: center; padding: 20px;">
+                <div style="margin-bottom: 25px;">
+                  <i class="fa-brands fa-github" style="font-size: 60px; color: var(--text-primary);"></i>
+                  <p style="margin-top: 10px; font-weight: 600;">Version Control</p>
                 </div>
-            </div>
-        </div>
-      </div>
-
-      <div class="slide-container" id="slide10" style="padding: 40px 80px;">
-        <h2 class="slide-title">CI/CD & Deployment</h2>
-        <div class="content-area">
-          <div class="two-column" style="gap: 30px;">
-            <div style="text-align: center; padding: 20px;">
-              <div style="margin-bottom: 25px;">
-                <i class="fa-brands fa-github" style="font-size: 60px; color: var(--text-primary);"></i>
-                <p style="margin-top: 10px; font-weight: 600;">Version Control</p>
+                <i class="fa-solid fa-arrow-down" style="font-size: 25px; color: var(--primary-cyan); margin: 15px 0;"></i>
+                <div style="margin-bottom: 25px;">
+                  <i class="fa-solid fa-code-branch" style="font-size: 60px; color: var(--primary-cyan);"></i>
+                  <p style="margin-top: 10px; font-weight: 600;">CI/CD Pipeline</p>
+                </div>
+                <i class="fa-solid fa-arrow-down" style="font-size: 25px; color: var(--primary-purple); margin: 15px 0;"></i>
+                <div>
+                  <i class="fa-solid fa-cloud-upload" style="font-size: 60px; color: var(--primary-purple);"></i>
+                  <p style="margin-top: 10px; font-weight: 600;">Live Deployment</p>
+                </div>
               </div>
-              <i class="fa-solid fa-arrow-down" style="font-size: 25px; color: var(--primary-cyan); margin: 15px 0;"></i>
-              <div style="margin-bottom: 25px;">
-                <i class="fa-solid fa-code-branch" style="font-size: 60px; color: var(--primary-cyan);"></i>
-                <p style="margin-top: 10px; font-weight: 600;">CI/CD Pipeline</p>
-              </div>
-              <i class="fa-solid fa-arrow-down" style="font-size: 25px; color: var(--primary-purple); margin: 15px 0;"></i>
               <div>
-                <i class="fa-solid fa-cloud-upload" style="font-size: 60px; color: var(--primary-purple);"></i>
-                <p style="margin-top: 10px; font-weight: 600;">Live Deployment</p>
+                <ul class="styled-list">
+                  <li style="margin-bottom: 15px;">
+                    <strong>Version Control:</strong> Git workflow with <span class="tech-code">main</span> and <span class="tech-code">dev</span> branching strategy on GitHub.
+                  </li>
+                  <li style="margin-bottom: 15px;">
+                    <strong>Runtime Environment:</strong> Standard Python <span class="tech-code">3.10.13</span> environment managed via <span class="tech-code">requirements.txt</span>.
+                  </li>
+                  <li style="margin-bottom: 15px;">
+                    <strong>Local Validation:</strong> Rigorous manual testing of API endpoints and UI components in development environment before deployment.
+                  </li>
+                  <li style="margin-bottom: 15px;">
+                    <strong>Dual Deployment:</strong> Backend API hosted on <span class="tech-code">Render</span> and Frontend statically served via <span class="tech-code">GitHub Pages</span>.
+                  </li>
+                </ul>
               </div>
-            </div>
-            <div>
-              <ul class="styled-list">
-                <li style="margin-bottom: 15px;">
-                  <strong>Version Control:</strong> Git workflow with <span class="tech-code">main</span> and <span class="tech-code">dev</span> branching strategy on GitHub.
-                </li>
-                <li style="margin-bottom: 15px;">
-                  <strong>Runtime Environment:</strong> Standard Python <span class="tech-code">3.10.13</span> environment managed via <span class="tech-code">requirements.txt</span>.
-                </li>
-                <li style="margin-bottom: 15px;">
-                  <strong>Local Validation:</strong> Rigorous manual testing of API endpoints and UI components in development environment before deployment.
-                </li>
-                <li style="margin-bottom: 15px;">
-                  <strong>Dual Deployment:</strong> Backend API hosted on <span class="tech-code">Render</span> and Frontend statically served via <span class="tech-code">GitHub Pages</span>.
-                </li>
-              </ul>
             </div>
           </div>
         </div>
-      </div>
 
-      <div class="slide-container" id="slide11">
-        <h2 class="slide-title">Project Workflow</h2>
-        <div class="content-area">
-          <div class="timeline">
-            <div class="step">
-              <div class="dot"></div>
-              <h3>Data<br/>Collection</h3>
-              <p>Aggregated 11k+ URLs from UCI Machine Learning Repository.</p>
+        <div class="slide-container" id="slide11">
+          <h2 class="slide-title">Project Workflow</h2>
+          <div class="content-area">
+            <div class="timeline">
+              <div class="step">
+                <div class="dot"></div>
+                <h3>Data<br/>Collection</h3>
+                <p>Aggregated 11k+ URLs from UCI Machine Learning Repository.</p>
+              </div>
+              <div class="step">
+                <div class="dot"></div>
+                <h3>Data<br/>Preprocessing</h3>
+                <p>Cleaned raw data and engineered 12 distinctive features.</p>
+              </div>
+              <div class="step">
+                <div class="dot"></div>
+                <h3>Model<br/>Training</h3>
+                <p>Trained Gradient Boosting with 3-fold cross-validation.</p>
+              </div>
+              <div class="step">
+                <div class="dot"></div>
+                <h3>Model<br/>Serialization</h3>
+                <p>Serialized trained model using Pickle and dill for production use.</p>
+              </div>
+              <div class="step">
+                <div class="dot"></div>
+                <h3>API<br/>Integration</h3>
+                <p>Developed RESTful Flask endpoints to serve JSON predictions.</p>
+              </div>
+              <div class="step">
+                <div class="dot"></div>
+                <h3>Testing &<br/>Deployment</h3>
+                <p>Validated locally before deploying to Render & GitHub Pages.</p>
+              </div>
             </div>
-            <div class="step">
-              <div class="dot"></div>
-              <h3>Data<br/>Preprocessing</h3>
-              <p>Cleaned raw data and engineered 12 distinctive features.</p>
+            <div style="margin-top: 80px; text-align: center;">
+              <i class="fa-solid fa-gears icon-decoration" style="font-size: 140px; opacity: 0.2;"></i>
             </div>
-            <div class="step">
-              <div class="dot"></div>
-              <h3>Model<br/>Training</h3>
-              <p>Trained Gradient Boosting with 3-fold cross-validation.</p>
-            </div>
-            <div class="step">
-              <div class="dot"></div>
-              <h3>Model<br/>Serialization</h3>
-              <p>Serialized trained model using Pickle and dill for production use.</p>
-            </div>
-            <div class="step">
-              <div class="dot"></div>
-              <h3>API<br/>Integration</h3>
-              <p>Developed RESTful Flask endpoints to serve JSON predictions.</p>
-            </div>
-            <div class="step">
-              <div class="dot"></div>
-              <h3>Testing &<br/>Deployment</h3>
-              <p>Validated locally before deploying to Render & GitHub Pages.</p>
-            </div>
-          </div>
-          <div style="margin-top: 80px; text-align: center;">
-            <i class="fa-solid fa-gears icon-decoration" style="font-size: 140px; opacity: 0.2;"></i>
           </div>
         </div>
-      </div>
 
-      <div class="slide-container" id="slide12">
-        <h2 class="slide-title" style="border-left: 5px solid var(--primary-cyan); padding-left: 20px;">Live Demo Result</h2>
-        <div class="content-area">
-          <div class="two-column" style="align-items: flex-start;">
-            <div>
-              <div class="result-input-group">
-                <label class="result-label">Input URL:</label>
-                <div class="result-input">https://secure-bank-login.net/auth</div>
-              </div>
-              
-              <div class="result-input-group">
-                <label class="result-label">API Response:</label>
-                <div class="code-window" style="height: 220px; box-shadow: none; border: 1px solid var(--border-color);">
-                    <div class="window-header" style="background: rgba(15, 23, 42, 0.8);">
-                        <div class="w-dot red"></div><div class="w-dot yellow"></div><div class="w-dot green"></div>
-                        <div style="margin-left: 10px; font-size: 11px; color: #64748b;">JSON Output</div>
-                    </div>
-                    <div class="code-content" style="padding: 15px; font-size: 13px;">
+        <div class="slide-container" id="slide12">
+          <h2 class="slide-title" style="border-left: 5px solid var(--primary-cyan); padding-left: 20px;">Live Demo Result</h2>
+          <div class="content-area">
+            <div class="two-column" style="align-items: flex-start;">
+              <div>
+                <div class="result-input-group">
+                  <label class="result-label">Input URL:</label>
+                  <div class="result-input">https://secure-bank-login.net/auth</div>
+                </div>
+                
+                <div class="result-input-group">
+                  <label class="result-label">API Response:</label>
+                  <div class="code-window" style="height: 220px; box-shadow: none; border: 1px solid var(--border-color);">
+                      <div class="window-header" style="background: rgba(15, 23, 42, 0.8);">
+                          <div class="w-dot red"></div><div class="w-dot yellow"></div><div class="w-dot green"></div>
+                          <div style="margin-left: 10px; font-size: 11px; color: #64748b;">JSON Output</div>
+                      </div>
+                      <div class="code-content" style="padding: 15px; font-size: 13px;">
 {
   <span class="key">"url"</span>: <span class="string">"https://secure-bank-login.net/auth"</span>,
   <span class="key">"prediction"</span>: <span class="string">"phishing"</span>,
   <span class="key">"confidence"</span>: <span class="number">99.49</span>,
 }
-                    </div>
+                      </div>
+                  </div>
                 </div>
               </div>
-            </div>
-            
-            <div>
-               <div class="performance-card-large">
-                  <h3 class="perf-title">Agg. Confidence Rate</h3>
-                  <div class="perf-value-large">>99%</div>
-                  <div class="perf-subtitle">CONSISTENTLY</div>
-               </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="slide-container" id="slide13">
-        <h2 class="slide-title">Challenges Overcome</h2>
-        <div class="content-area">
-          <div class="two-column">
-            <div>
-              <ul class="styled-list">
-                <li>
-                  <strong>Pipeline Orchestration:</strong> Complexities in automating the workflow between data ingestion, transformation, and model training (Hyperparameter Tuning).
-                </li>
-                <li>
-                  <strong>Dataset Quality & Feature Selection:</strong> Difficulty in sourcing balanced phishing datasets and isolating high-impact features from noisy data.
-                </li>
-                <li>
-                  <strong>Responsive Animation & Optimization:</strong> Prevented premature animation triggers on mobile devices before content visibility.
-                </li>
-                <li>
-                  <strong>Model Serving & CI/CD:</strong> Optimized background animations to ensure uniform density and stable rendering across all resolutions.
-                </li>
-                <li>
-                  <strong>API Latency:</strong> Ensuring the API handles heavy inference loads and returns predictions in sub-second time (<500MS).
-                </li>
-              </ul>
-            </div>
-            <div style="text-align: center; display: flex; flex-direction: column; justify-content: center; align-items: center;">
-              <i class="fa-solid fa-triangle-exclamation" style="font-size: 180px; color: var(--danger); opacity: 0.8; animation: iconFloat 8s ease-in-out infinite;"></i>
-              <p style="margin-top: 30px; color: var(--danger); font-weight: 700; font-size: 24px; letter-spacing: 0.1em; text-transform: uppercase;">
-                Technical Hurdles
-              </p>
+              
+              <div>
+                 <div class="performance-card-large">
+                    <h3 class="perf-title">Agg. Confidence Rate</h3>
+                    <div class="perf-value-large">>99%</div>
+                    <div class="perf-subtitle">CONSISTENTLY</div>
+                 </div>
+              </div>
             </div>
           </div>
         </div>
-      </div>
 
-      <div class="slide-container" id="slide15">
-        <div class="content-area" style="text-align: center; justify-content: center;">
-          <i class="fa-solid fa-shield-check" style="font-size: 120px; color: var(--success); margin-bottom: 40px; filter: drop-shadow(0 0 30px rgba(16, 185, 129, 0.6)); animation: iconFloat 6s ease-in-out infinite;"></i>
-          <h2 class="glow-text" style="font-size: 64px; margin-bottom: 30px;">Conclusion</h2>
-          <p style="max-width: 900px; margin: 0 auto 40px; font-size: 22px; color: var(--text-primary); line-height: 1.8;">
-            Supervised machine learning <strong>effectively automates phishing detection</strong>, reducing manual security overhead by <strong>70%</strong>. Our end-to-end pipeline validates the feasibility of deploying ML models from data collection to production cloud deployment.
-          </p>
-          <div style="margin-top: 60px;">
-            <span class="badge badge-cyan" style="font-size: 15px; padding: 12px 24px;">93.6% Accuracy</span>
-            <span class="badge badge-purple" style="font-size: 15px; padding: 12px 24px;">&lt;500ms Response</span>
-            <span class="badge badge-pink" style="font-size: 15px; padding: 12px 24px;">Production Ready</span>
+        <div class="slide-container" id="slide13">
+          <h2 class="slide-title">Challenges Overcome</h2>
+          <div class="content-area">
+            <div class="two-column">
+              <div>
+                <ul class="styled-list">
+                  <li>
+                    <strong>Pipeline Orchestration:</strong> Complexities in automating the workflow between data ingestion, transformation, and model training (Hyperparameter Tuning).
+                  </li>
+                  <li>
+                    <strong>Dataset Quality & Feature Selection:</strong> Difficulty in sourcing balanced phishing datasets and isolating high-impact features from noisy data.
+                  </li>
+                  <li>
+                    <strong>Responsive Animation & Optimization:</strong> Prevented premature animation triggers on mobile devices before content visibility.
+                  </li>
+                  <li>
+                    <strong>Model Serving & CI/CD:</strong> Optimized background animations to ensure uniform density and stable rendering across all resolutions.
+                  </li>
+                  <li>
+                    <strong>API Latency:</strong> Ensuring the API handles heavy inference loads and returns predictions in sub-second time (<500MS).
+                  </li>
+                </ul>
+              </div>
+              <div style="text-align: center; display: flex; flex-direction: column; justify-content: center; align-items: center;">
+                <i class="fa-solid fa-triangle-exclamation" style="font-size: 180px; color: var(--danger); opacity: 0.8; animation: iconFloat 8s ease-in-out infinite;"></i>
+                <p style="margin-top: 30px; color: var(--danger); font-weight: 700; font-size: 24px; letter-spacing: 0.1em; text-transform: uppercase;">
+                  Technical Hurdles
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="slide-container" id="slide15">
+          <div class="content-area" style="text-align: center; justify-content: center;">
+            <i class="fa-solid fa-shield-check" style="font-size: 120px; color: var(--success); margin-bottom: 40px; filter: drop-shadow(0 0 30px rgba(16, 185, 129, 0.6)); animation: iconFloat 6s ease-in-out infinite;"></i>
+            <h2 class="glow-text" style="font-size: 64px; margin-bottom: 30px;">Conclusion</h2>
+            <p style="max-width: 900px; margin: 0 auto 40px; font-size: 22px; color: var(--text-primary); line-height: 1.8;">
+              Supervised machine learning <strong>effectively automates phishing detection</strong>, reducing manual security overhead by <strong>70%</strong>. Our end-to-end pipeline validates the feasibility of deploying ML models from data collection to production cloud deployment.
+            </p>
+            <div style="margin-top: 60px;">
+              <span class="badge badge-cyan" style="font-size: 15px; padding: 12px 24px;">93.6% Accuracy</span>
+              <span class="badge badge-purple" style="font-size: 15px; padding: 12px 24px;">&lt;500ms Response</span>
+              <span class="badge badge-pink" style="font-size: 15px; padding: 12px 24px;">Production Ready</span>
+            </div>
           </div>
         </div>
       </div>
@@ -1681,82 +1582,147 @@
 
     <script>
       document.addEventListener("DOMContentLoaded", () => {
-        // --- 1. Desktop Navigation Logic ---
         const slides = document.querySelectorAll(".slide-container");
         const progressBar = document.getElementById("progress-bar");
+        const wrapper = document.getElementById("presentation-wrapper");
+        const scalerContainer = document.getElementById("scaler-container");
+        const body = document.body;
+        
         let currentIndex = 0;
+        let isMobileMode = false;
 
-        function updateSlide() {
-          // Only apply desktop logic if we are NOT on mobile
-          if (window.innerWidth > 800) {
-            slides.forEach((slide, index) => {
-              if (index === currentIndex) {
-                slide.classList.add("active");
-              } else {
-                slide.classList.remove("active");
-              }
-            });
-            if (progressBar) {
-              const progress = ((currentIndex + 1) / slides.length) * 100;
-              progressBar.style.width = `${progress}%`;
+        // --- HYBRID VIEW LOGIC ---
+        function handleResize() {
+            const windowWidth = window.innerWidth;
+            const windowHeight = window.innerHeight;
+            
+            // Check for Mobile Threshold (Width < 1000px)
+            if (windowWidth < 1000) {
+                if (!isMobileMode) {
+                    enableMobileMode();
+                }
+                
+                // --- Mobile Scaling Logic ---
+                // We scale the wrapper to fit the width, but allow it to grow vertically
+                const scale = windowWidth / 1280; // Scale based on width only
+                wrapper.style.transform = `scale(${scale})`;
+                
+                // Adjust container height to match scaled content height
+                // Total height = (slideHeight + gap) * slides - gap + padding
+                const slideHeight = 720;
+                const gap = 60;
+                const totalHeightRaw = (slideHeight * slides.length) + (gap * (slides.length - 1)) + 100;
+                const scaledHeight = totalHeightRaw * scale;
+                
+                scalerContainer.style.height = `${scaledHeight}px`;
+
+            } else {
+                if (isMobileMode) {
+                    disableMobileMode();
+                }
+
+                // --- Desktop Scaling Logic ---
+                // Center and scale to fit viewport (Letterbox style)
+                const baseWidth = 1280;
+                const baseHeight = 720;
+                const widthRatio = windowWidth / baseWidth;
+                const heightRatio = windowHeight / baseHeight;
+                const scale = Math.min(widthRatio, heightRatio) * 0.95;
+                
+                wrapper.style.transform = `scale(${scale})`;
+                scalerContainer.style.height = '100%'; // Full height for centering
             }
-          }
         }
 
-        // Keyboard Navigation (Desktop Only)
-        document.addEventListener("keydown", (e) => {
-          if (window.innerWidth > 800) {
-            if (e.key === "ArrowRight" || e.key === " " || e.key === "Enter") {
-              e.preventDefault();
-              if (currentIndex < slides.length - 1) {
-                currentIndex++;
-                updateSlide();
-              }
-            } else if (e.key === "ArrowLeft" || e.key === "Backspace") {
-              e.preventDefault();
-              if (currentIndex > 0) {
-                currentIndex--;
-                updateSlide();
-              }
-            }
-          }
-        });
-
-        // Initialize Desktop
-        updateSlide();
-
-        // --- 2. Mobile Scroll Animation Logic ---
-        // We check if the device width is mobile
-        if (window.innerWidth <= 800) {
+        function enableMobileMode() {
+            isMobileMode = true;
+            body.classList.add('mobile-mode');
             
-            // Define the Intersection Observer
-            const observerOptions = {
-                root: null, // Use the viewport
-                rootMargin: '0px',
-                threshold: 0.15 // Trigger when 15% of the element is visible
-            };
+            // Setup Intersection Observer for scroll animations
+            setupObserver();
+        }
 
-            const observer = new IntersectionObserver((entries, observer) => {
+        function disableMobileMode() {
+            isMobileMode = false;
+            body.classList.remove('mobile-mode');
+            
+            // Reset wrapper styles for desktop
+            wrapper.style.height = '720px';
+            wrapper.style.overflow = 'hidden';
+            
+            // Restore active slide state
+            updateSlide();
+        }
+
+        // --- SCROLL ANIMATION OBSERVER (Mobile Only) ---
+        let observer;
+        function setupObserver() {
+            if (observer) observer.disconnect();
+            
+            observer = new IntersectionObserver((entries) => {
                 entries.forEach(entry => {
                     if (entry.isIntersecting) {
-                        entry.target.classList.add('in-view');
-                        observer.unobserve(entry.target); // Stop observing once triggered
+                        entry.target.classList.add('scroll-active');
                     }
                 });
-            }, observerOptions);
+            }, { threshold: 0.15 }); // Trigger when 15% of slide is visible
 
-            // Select elements to animate
-            // We want to animate: titles, paragraphs, cards, list items, images
-            const targetElements = document.querySelectorAll(
-                '.slide-title, .content-area p, .team-card, .styled-list li, .image-wrapper, .bar-track, .code-window, .timeline .step'
-            );
-
-            // Apply the 'scroll-trigger' class and observe them
-            targetElements.forEach(el => {
-                el.classList.add('scroll-trigger');
-                observer.observe(el);
-            });
+            slides.forEach(slide => observer.observe(slide));
         }
+
+        // --- DESKTOP NAVIGATION ---
+        window.updateSlide = function() {
+            // Only update "active" class in Desktop Mode
+            // In Mobile Mode, "active" is irrelevant (all are flex), we use "scroll-active"
+            if (isMobileMode) return;
+
+            slides.forEach((slide, index) => {
+                if (index === currentIndex) {
+                    slide.classList.add("active");
+                } else {
+                    slide.classList.remove("active");
+                }
+            });
+
+            // Update Progress Bar
+            if (progressBar) {
+                const progress = ((currentIndex + 1) / slides.length) * 100;
+                progressBar.style.width = `${progress}%`;
+            }
+        };
+
+        window.nextSlide = function() {
+            if (currentIndex < slides.length - 1) {
+                currentIndex++;
+                updateSlide();
+            }
+        };
+
+        window.prevSlide = function() {
+            if (currentIndex > 0) {
+                currentIndex--;
+                updateSlide();
+            }
+        };
+
+        // Keyboard Listener (Desktop)
+        document.addEventListener("keydown", (e) => {
+            if (isMobileMode) return; // Disable keyboard nav on mobile scroll view
+
+            if (e.key === "ArrowRight" || e.key === " " || e.key === "Enter") {
+                e.preventDefault(); 
+                nextSlide();
+            } 
+            else if (e.key === "ArrowLeft" || e.key === "Backspace") {
+                e.preventDefault();
+                prevSlide();
+            } 
+        });
+
+        // Initialize
+        window.addEventListener('resize', handleResize);
+        handleResize(); // Initial check
+        if (!isMobileMode) updateSlide();
       });
     </script>
   </body>
