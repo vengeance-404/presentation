@@ -17,7 +17,7 @@
     <style>
       /* ============================================
          PROFESSIONAL PHISHING DETECTION PRESENTATION
-         Clean View (No Nav Controls) v3.1
+         Optimized Mobile Scroll + Desktop Progress Bar v4.1
          ============================================ */
 
       /* === ROOT & ANIMATIONS === */
@@ -46,13 +46,13 @@
 
       body {
         background: linear-gradient(135deg, #060919 0%, #0a0e27 50%, #0d1128 100%);
+        background-attachment: fixed; /* Prevents background repaint on scroll */
         font-family: "Inter", sans-serif;
         color: var(--text-primary);
         margin: 0;
         min-height: 100vh;
         width: 100vw;
         overflow-x: hidden;
-        position: relative;
       }
 
       /* Animated Background Particles */
@@ -70,6 +70,7 @@
         animation: particleFloat 20s ease-in-out infinite;
         z-index: 0;
         pointer-events: none;
+        will-change: transform; /* Hint to browser for performance */
       }
 
       @keyframes particleFloat {
@@ -78,65 +79,58 @@
         66% { transform: translate(-20px, 20px) scale(0.95); }
       }
 
-      /* === WRAPPER FOR SCALING === */
+      /* === WRAPPER === */
       #scaler-container {
         width: 100%;
-        height: 100%;
+        height: 100vh;
         display: flex;
         justify-content: center;
         align-items: center;
-        position: relative;
+        overflow: hidden;
       }
 
-      /* === PRESENTATION CONTAINER === */
       #presentation-wrapper {
         width: 1280px;
         height: 720px;
         position: relative;
-        /* Default Desktop Styling */
+        background: var(--bg-darker);
+        border-radius: 12px;
+        overflow: hidden;
+        /* Desktop Default */
         box-shadow: 
           0 50px 100px rgba(0, 0, 0, 0.8),
           0 0 80px rgba(0, 242, 255, 0.1),
           inset 0 0 0 1px rgba(255, 255, 255, 0.05);
-        background: var(--bg-darker);
-        border-radius: 12px;
-        overflow: hidden;
-        z-index: 10;
         flex-shrink: 0;
         transform-origin: center center;
         transition: transform 0.1s linear; 
       }
 
-      /* === MOBILE SCROLL MODE OVERRIDES === */
-      body.mobile-mode {
-        overflow-y: auto !important;
-        height: auto !important;
-        display: block;
-      }
-
+      /* === MOBILE MODE OVERRIDES === */
       body.mobile-mode #scaler-container {
         display: block;
         height: auto;
-        overflow: visible;
+        padding-bottom: 50px;
       }
 
       body.mobile-mode #presentation-wrapper {
+        width: 100%;
         height: auto !important;
-        overflow: visible !important;
         background: transparent;
         box-shadow: none;
+        border-radius: 0;
+        overflow: visible !important;
+        transform: none !important; /* Disable wrapper scaling on mobile */
         display: flex;
         flex-direction: column;
-        gap: 60px; /* Gap between slides on mobile */
-        padding-bottom: 100px;
-        transform-origin: top left;
-        border-radius: 0;
+        align-items: center; /* Center slides horizontally */
+        padding-top: 20px;
       }
 
       /* === SLIDE CONTAINER === */
       .slide-container {
-        width: 1280px; /* Fixed internal width */
-        height: 720px; /* Fixed internal height */
+        width: 1280px; /* Always fixed resolution */
+        height: 720px; /* Always fixed resolution */
         background: linear-gradient(135deg, var(--bg-darker) 0%, var(--bg-dark) 100%);
         position: absolute;
         top: 0;
@@ -146,37 +140,31 @@
         padding: 60px 80px;
         z-index: 1;
         overflow: hidden;
+        border: 1px solid rgba(255, 255, 255, 0.05);
       }
 
-      /* Desktop Active State */
       .slide-container.active {
         display: flex;
         animation: slideEnter 0.6s cubic-bezier(0.16, 1, 0.3, 1);
       }
 
-      /* Mobile Mode Slide Styling */
+      /* Mobile Slide Styling */
       body.mobile-mode .slide-container {
-        position: relative !important; /* Stack them */
+        position: relative !important;
         display: flex !important;
-        opacity: 0; /* Hidden by default for scroll reveal */
-        transition: opacity 0.8s ease, transform 0.8s ease;
-        transform: translateY(50px);
-        border-radius: 12px;
-        box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-        border: 1px solid rgba(255,255,255,0.05);
+        top: auto;
+        left: auto;
+        /* Visual adjustments for mobile cards */
+        border-radius: 16px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        /* Critical for performance: We scale individual slides */
+        transform-origin: top center;
+        opacity: 0;
+        transition: opacity 0.5s ease;
       }
 
-      /* Mobile Scroll Reveal Active State */
-      body.mobile-mode .slide-container.scroll-active {
+      body.mobile-mode .slide-container.scroll-visible {
         opacity: 1;
-        transform: translateY(0);
-        /* Re-trigger internal animations */
-        animation: none; 
-      }
-      
-      /* Re-trigger content fade in on scroll */
-      body.mobile-mode .slide-container.scroll-active .content-area {
-        animation: contentFadeIn 0.8s ease-out 0.2s both;
       }
 
       @keyframes slideEnter {
@@ -198,7 +186,6 @@
         background-size: 60px 60px;
         transform: perspective(500px) rotateX(60deg);
         animation: gridScroll 30s linear infinite;
-        z-index: 0;
         pointer-events: none;
       }
 
@@ -224,7 +211,6 @@
         border-radius: 50%;
         filter: blur(60px);
         animation: glowPulse 8s ease-in-out infinite;
-        z-index: 0;
         pointer-events: none;
       }
 
@@ -947,22 +933,6 @@
         opacity: 0.7;
       }
 
-      #progress-bar {
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        height: 5px;
-        background: linear-gradient(90deg, var(--primary-cyan), var(--primary-purple), var(--accent-pink));
-        width: 0%;
-        transition: width 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-        z-index: 101;
-        box-shadow: 0 0 20px rgba(0, 242, 255, 0.6);
-      }
-      
-      body.mobile-mode #progress-bar {
-        display: none;
-      }
-
       /* === SPECIAL EFFECTS === */
       .glow-text {
         text-shadow: 0 0 20px rgba(0, 242, 255, 0.5);
@@ -1021,6 +991,24 @@
         background: rgba(255, 0, 110, 0.15);
         color: var(--accent-pink);
         border: 1px solid var(--accent-pink);
+      }
+
+      /* === PROGRESS BAR (Restored) === */
+      #progress-bar {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        height: 5px;
+        background: linear-gradient(90deg, var(--primary-cyan), var(--primary-purple), var(--accent-pink));
+        width: 0%;
+        transition: width 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        z-index: 101;
+        box-shadow: 0 0 20px rgba(0, 242, 255, 0.6);
+      }
+      
+      /* Hide progress bar in mobile mode */
+      body.mobile-mode #progress-bar {
+        display: none !important;
       }
     </style>
   </head>
@@ -1583,9 +1571,9 @@
     <script>
       document.addEventListener("DOMContentLoaded", () => {
         const slides = document.querySelectorAll(".slide-container");
-        const progressBar = document.getElementById("progress-bar");
         const wrapper = document.getElementById("presentation-wrapper");
         const scalerContainer = document.getElementById("scaler-container");
+        const progressBar = document.getElementById("progress-bar");
         const body = document.body;
         
         let currentIndex = 0;
@@ -1603,18 +1591,19 @@
                 }
                 
                 // --- Mobile Scaling Logic ---
-                // We scale the wrapper to fit the width, but allow it to grow vertically
-                const scale = windowWidth / 1280; // Scale based on width only
-                wrapper.style.transform = `scale(${scale})`;
+                // Scale individual slides to width of screen (minus padding)
+                // We use 0.95 to give a small visual border
+                const scale = (windowWidth / 1280) * 0.95; 
                 
-                // Adjust container height to match scaled content height
-                // Total height = (slideHeight + gap) * slides - gap + padding
-                const slideHeight = 720;
-                const gap = 60;
-                const totalHeightRaw = (slideHeight * slides.length) + (gap * (slides.length - 1)) + 100;
-                const scaledHeight = totalHeightRaw * scale;
-                
-                scalerContainer.style.height = `${scaledHeight}px`;
+                // Apply scale to ALL slides individually
+                slides.forEach(slide => {
+                    slide.style.transform = `scale(${scale})`;
+                    // Calculate negative margin to pull slides up (since they visually shrink)
+                    // Original Height = 720. Scaled Height = 720 * scale.
+                    // We need to reduce the space taken by the element.
+                    const spaceRemoved = 720 - (720 * scale);
+                    slide.style.marginBottom = `-${spaceRemoved - 40}px`; // 40px gap
+                });
 
             } else {
                 if (isMobileMode) {
@@ -1622,7 +1611,7 @@
                 }
 
                 // --- Desktop Scaling Logic ---
-                // Center and scale to fit viewport (Letterbox style)
+                // Scale the wrapper to fit viewport
                 const baseWidth = 1280;
                 const baseHeight = 720;
                 const widthRatio = windowWidth / baseWidth;
@@ -1630,15 +1619,18 @@
                 const scale = Math.min(widthRatio, heightRatio) * 0.95;
                 
                 wrapper.style.transform = `scale(${scale})`;
-                scalerContainer.style.height = '100%'; // Full height for centering
+                
+                // Reset slide styles
+                slides.forEach(slide => {
+                    slide.style.transform = '';
+                    slide.style.marginBottom = '';
+                });
             }
         }
 
         function enableMobileMode() {
             isMobileMode = true;
             body.classList.add('mobile-mode');
-            
-            // Setup Intersection Observer for scroll animations
             setupObserver();
         }
 
@@ -1662,18 +1654,16 @@
             observer = new IntersectionObserver((entries) => {
                 entries.forEach(entry => {
                     if (entry.isIntersecting) {
-                        entry.target.classList.add('scroll-active');
+                        entry.target.classList.add('scroll-visible');
                     }
                 });
-            }, { threshold: 0.15 }); // Trigger when 15% of slide is visible
+            }, { threshold: 0.1 }); 
 
             slides.forEach(slide => observer.observe(slide));
         }
 
         // --- DESKTOP NAVIGATION ---
         window.updateSlide = function() {
-            // Only update "active" class in Desktop Mode
-            // In Mobile Mode, "active" is irrelevant (all are flex), we use "scroll-active"
             if (isMobileMode) return;
 
             slides.forEach((slide, index) => {
@@ -1707,7 +1697,7 @@
 
         // Keyboard Listener (Desktop)
         document.addEventListener("keydown", (e) => {
-            if (isMobileMode) return; // Disable keyboard nav on mobile scroll view
+            if (isMobileMode) return; 
 
             if (e.key === "ArrowRight" || e.key === " " || e.key === "Enter") {
                 e.preventDefault(); 
@@ -1721,8 +1711,11 @@
 
         // Initialize
         window.addEventListener('resize', handleResize);
-        handleResize(); // Initial check
-        if (!isMobileMode) updateSlide();
+        // Defer initial calculation slightly to ensure CSS load
+        setTimeout(() => {
+            handleResize();
+            if (!isMobileMode) updateSlide();
+        }, 50);
       });
     </script>
   </body>
