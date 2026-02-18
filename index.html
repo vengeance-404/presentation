@@ -1,0 +1,1648 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Phishing Website Detection using ML</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
+    <style>
+      /* ============================================
+         PROFESSIONAL PHISHING DETECTION PRESENTATION
+         Enhanced Design System v2.0
+         ============================================ */
+
+      /* === ROOT & ANIMATIONS === */
+      :root {
+        --primary-cyan: #00f2ff;
+        --primary-purple: #bc13fe;
+        --accent-pink: #ff006e;
+        --bg-dark: #0a0e27;
+        --bg-darker: #060919;
+        --bg-card: rgba(20, 25, 50, 0.7);
+        --text-primary: #ffffff;
+        --text-secondary: #b8c5d6;
+        --border-color: #1e2a47;
+        --success: #10b981;
+        --warning: #f59e0b;
+        --danger: #ef4444;
+        --shadow-glow: 0 0 40px rgba(0, 242, 255, 0.15);
+        --shadow-strong: 0 20px 60px rgba(0, 0, 0, 0.6);
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        background: linear-gradient(135deg, #060919 0%, #0a0e27 50%, #0d1128 100%);
+        font-family: "Inter", sans-serif;
+        color: var(--text-primary);
+        margin: 0;
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        overflow: hidden;
+        position: relative;
+      }
+
+      /* Animated Background Particles */
+      body::before {
+        content: "";
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image: 
+          radial-gradient(circle at 20% 30%, rgba(0, 242, 255, 0.03) 0%, transparent 50%),
+          radial-gradient(circle at 80% 70%, rgba(188, 19, 254, 0.04) 0%, transparent 50%),
+          radial-gradient(circle at 50% 50%, rgba(255, 0, 110, 0.02) 0%, transparent 60%);
+        animation: particleFloat 20s ease-in-out infinite;
+        z-index: 0;
+        pointer-events: none;
+      }
+
+      @keyframes particleFloat {
+        0%, 100% { transform: translate(0, 0) scale(1); }
+        33% { transform: translate(30px, -30px) scale(1.05); }
+        66% { transform: translate(-20px, 20px) scale(0.95); }
+      }
+
+      /* === PRESENTATION CONTAINER === */
+      #presentation-wrapper {
+        width: 1280px;
+        height: 720px;
+        position: relative;
+        box-shadow: 
+          0 50px 100px rgba(0, 0, 0, 0.8),
+          0 0 80px rgba(0, 242, 255, 0.1),
+          inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+        background: var(--bg-darker);
+        border-radius: 12px;
+        overflow: hidden;
+        z-index: 10;
+      }
+
+      /* === SLIDE CONTAINER === */
+      .slide-container {
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, var(--bg-darker) 0%, var(--bg-dark) 100%);
+        position: absolute;
+        top: 0;
+        left: 0;
+        display: none;
+        flex-direction: column;
+        padding: 60px 80px;
+        z-index: 1;
+        overflow: hidden;
+      }
+
+      .slide-container.active {
+        display: flex;
+        animation: slideEnter 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+
+      @keyframes slideEnter {
+        from {
+          opacity: 0;
+          transform: translateY(20px) scale(0.98);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0) scale(1);
+        }
+      }
+
+      /* Advanced Grid Background */
+      .slide-container::before {
+        content: "";
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background-image:
+          linear-gradient(rgba(0, 242, 255, 0.03) 1.5px, transparent 1.5px),
+          linear-gradient(90deg, rgba(0, 242, 255, 0.03) 1.5px, transparent 1.5px);
+        background-size: 60px 60px;
+        transform: perspective(500px) rotateX(60deg);
+        animation: gridScroll 30s linear infinite;
+        z-index: 0;
+        pointer-events: none;
+      }
+
+      @keyframes gridScroll {
+        0% { transform: perspective(500px) rotateX(60deg) translateY(0); }
+        100% { transform: perspective(500px) rotateX(60deg) translateY(60px); }
+      }
+
+      /* Gradient Overlay Effects */
+      .slide-container::after {
+        content: "";
+        position: absolute;
+        bottom: -30%;
+        right: -20%;
+        width: 600px;
+        height: 600px;
+        background: radial-gradient(
+          circle,
+          rgba(188, 19, 254, 0.12) 0%,
+          rgba(255, 0, 110, 0.08) 40%,
+          transparent 70%
+        );
+        border-radius: 50%;
+        filter: blur(60px);
+        animation: glowPulse 8s ease-in-out infinite;
+        z-index: 0;
+        pointer-events: none;
+      }
+
+      @keyframes glowPulse {
+        0%, 100% { opacity: 0.5; transform: scale(1); }
+        50% { opacity: 0.8; transform: scale(1.1); }
+      }
+
+      .slide-container > * {
+        position: relative;
+        z-index: 1;
+      }
+
+      /* === TYPOGRAPHY === */
+      h1, h2, h3 {
+        font-family: "Space Grotesk", sans-serif;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+      }
+
+      h1 {
+        font-size: 64px;
+        line-height: 1.1;
+        background: linear-gradient(135deg, var(--primary-cyan) 0%, var(--primary-purple) 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        animation: titleShimmer 3s ease-in-out infinite;
+      }
+
+      @keyframes titleShimmer {
+        0%, 100% { filter: brightness(1); }
+        50% { filter: brightness(1.2); }
+      }
+
+      .slide-title {
+        font-size: 48px;
+        font-weight: 700;
+        margin-bottom: 40px;
+        padding-left: 24px;
+        border-left: 5px solid var(--primary-cyan);
+        position: relative;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        animation: titleSlideIn 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+
+      @keyframes titleSlideIn {
+        from {
+          opacity: 0;
+          transform: translateX(-30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateX(0);
+        }
+      }
+
+      .slide-title::before {
+        content: "";
+        position: absolute;
+        left: -5px;
+        top: 0;
+        width: 5px;
+        height: 100%;
+        background: linear-gradient(180deg, var(--primary-cyan), var(--primary-purple));
+        box-shadow: 0 0 20px var(--primary-cyan);
+      }
+
+      p, li {
+        font-size: 18px;
+        line-height: 1.7;
+        color: var(--text-secondary);
+      }
+
+      strong {
+        color: var(--primary-cyan);
+        font-weight: 600;
+      }
+
+      .tech-code {
+        font-family: "JetBrains Mono", monospace;
+        color: var(--primary-purple);
+        background: rgba(188, 19, 254, 0.1);
+        padding: 2px 8px;
+        border-radius: 4px;
+        font-size: 0.9em;
+      }
+
+      /* === LAYOUT COMPONENTS === */
+      .content-area {
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        width: 100%;
+        animation: contentFadeIn 0.8s ease-out 0.2s both;
+      }
+
+      @keyframes contentFadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .two-column {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 60px;
+        align-items: center;
+      }
+
+      /* === TEAM CARDS === */
+      .team-grid {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 16px;
+        margin-bottom: 40px;
+      }
+
+      .team-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        padding: 30px 16px;
+        border-radius: 12px;
+        text-align: center;
+        transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        position: relative;
+        overflow: hidden;
+        backdrop-filter: blur(10px);
+      }
+
+      .team-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, rgba(0, 242, 255, 0.05), rgba(188, 19, 254, 0.05));
+        opacity: 0;
+        transition: opacity 0.4s ease;
+      }
+
+      .team-card:hover {
+        transform: translateY(-8px) scale(1.02);
+        border-color: var(--primary-cyan);
+        box-shadow: var(--shadow-glow), var(--shadow-strong);
+      }
+
+      .team-card:hover::before {
+        opacity: 1;
+      }
+
+      .team-card i {
+        font-size: 40px;
+        color: var(--primary-cyan);
+        margin-bottom: 16px;
+        transition: transform 0.3s ease;
+      }
+
+      .team-card:hover i {
+        transform: scale(1.2) rotateY(180deg);
+      }
+
+      .team-card .role {
+        font-size: 11px;
+        color: var(--primary-purple);
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        display: block;
+        margin-bottom: 10px;
+      }
+
+      .team-card h3 {
+        font-size: 17px;
+        margin-bottom: 6px;
+        color: var(--text-primary);
+      }
+
+      .team-card .id {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 11px;
+        color: var(--text-secondary);
+        opacity: 0.7;
+      }
+
+      /* === STYLED LISTS === */
+      .styled-list {
+        list-style: none;
+        padding: 0;
+      }
+
+      .styled-list li {
+        position: relative;
+        padding-left: 35px;
+        margin-bottom: 20px;
+        animation: listItemSlide 0.5s ease-out both;
+      }
+
+      .styled-list li:nth-child(1) { animation-delay: 0.1s; }
+      .styled-list li:nth-child(2) { animation-delay: 0.2s; }
+      .styled-list li:nth-child(3) { animation-delay: 0.3s; }
+      .styled-list li:nth-child(4) { animation-delay: 0.4s; }
+
+      @keyframes listItemSlide {
+        from {
+          opacity: 0;
+          transform: translateX(-20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateX(0);
+        }
+      }
+
+      .styled-list li::before {
+        content: "▸";
+        position: absolute;
+        left: 0;
+        color: var(--primary-cyan);
+        font-size: 20px;
+        font-weight: bold;
+        animation: arrowPulse 2s ease-in-out infinite;
+      }
+
+      @keyframes arrowPulse {
+        0%, 100% { transform: translateX(0); }
+        50% { transform: translateX(4px); }
+      }
+
+      /* === IMAGE WRAPPERS === */
+      .image-wrapper {
+        border-radius: 16px;
+        border: 1px solid var(--border-color);
+        background: var(--bg-card);
+        min-height: 350px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        overflow: hidden;
+        backdrop-filter: blur(10px);
+        box-shadow: var(--shadow-strong);
+        transition: transform 0.3s ease;
+      }
+
+      .image-wrapper:hover {
+        transform: scale(1.02);
+        border-color: var(--primary-cyan);
+      }
+
+      /* === PHISHING EMAIL MOCK === */
+      .phishing-mock {
+        background: #ffffff;
+        color: #1a1a1a;
+        width: 100%;
+        border-radius: 8px;
+        padding: 28px;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.7);
+        animation: emailSlideIn 0.8s ease-out;
+      }
+
+      @keyframes emailSlideIn {
+        from {
+          opacity: 0;
+          transform: translateY(30px) rotateX(10deg);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0) rotateX(0);
+        }
+      }
+
+      .phishing-header {
+        border-bottom: 2px solid #e5e7eb;
+        padding-bottom: 12px;
+        margin-bottom: 18px;
+        font-size: 13px;
+        color: #6b7280;
+      }
+
+      .phishing-subject {
+        font-weight: 700;
+        font-size: 18px;
+        color: #000;
+        margin-bottom: 8px;
+      }
+
+      .phishing-body {
+        font-size: 14px;
+        line-height: 1.6;
+        color: #374151;
+      }
+
+      .suspicious-highlight {
+        background: rgba(239, 68, 68, 0.15);
+        border: 1.5px dashed var(--danger);
+        padding: 3px 6px;
+        border-radius: 4px;
+        color: #b91c1c;
+        font-weight: 600;
+        cursor: help;
+        position: relative;
+        transition: all 0.3s ease;
+      }
+
+      .suspicious-highlight:hover {
+        background: rgba(239, 68, 68, 0.25);
+        transform: scale(1.05);
+      }
+
+      .suspicious-highlight::after {
+        content: attr(data-reason);
+        position: absolute;
+        bottom: 120%;
+        left: 0;
+        background: var(--bg-darker);
+        color: var(--text-primary);
+        padding: 10px 15px;
+        font-size: 11px;
+        border-radius: 6px;
+        width: 240px;
+        display: none;
+        z-index: 100;
+        box-shadow: var(--shadow-strong);
+        border: 1px solid var(--primary-cyan);
+      }
+
+      .suspicious-highlight:hover::after {
+        display: block;
+        animation: tooltipFade 0.3s ease;
+      }
+
+      @keyframes tooltipFade {
+        from { opacity: 0; transform: translateY(5px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+
+      .phishing-btn {
+        display: inline-block;
+        background: linear-gradient(135deg, #0070ba, #005a94);
+        color: #ffffff !important;
+        padding: 14px 28px;
+        border-radius: 6px;
+        text-decoration: none;
+        margin-top: 18px;
+        font-weight: 700;
+        box-shadow: 0 4px 12px rgba(0, 112, 186, 0.4);
+        transition: transform 0.2s ease;
+      }
+
+      .phishing-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(0, 112, 186, 0.6);
+      }
+
+      /* === BAR CHARTS === */
+      .bar-track {
+        background: var(--bg-card);
+        height: 45px;
+        width: 100%;
+        border-radius: 8px;
+        overflow: hidden;
+        margin: 16px 0;
+        border: 1px solid var(--border-color);
+        position: relative;
+      }
+
+      .bar-fill {
+        height: 100%;
+        background: linear-gradient(90deg, var(--primary-cyan), var(--primary-purple));
+        display: flex;
+        align-items: center;
+        padding-left: 20px;
+        font-weight: 700;
+        font-size: 15px;
+        color: white;
+        box-shadow: inset 0 2px 10px rgba(255, 255, 255, 0.2);
+        animation: barGrow 1.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+        position: relative;
+        overflow: hidden;
+      }
+
+      @keyframes barGrow {
+        from { width: 0 !important; }
+      }
+
+      .bar-fill::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+        animation: barShine 2s ease-in-out infinite;
+      }
+
+      @keyframes barShine {
+        0% { left: -100%; }
+        100% { left: 200%; }
+      }
+
+      /* === TABLES === */
+      table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: var(--shadow-strong);
+      }
+
+      th {
+        background: linear-gradient(135deg, rgba(0, 242, 255, 0.2), rgba(188, 19, 254, 0.2));
+        color: var(--primary-cyan);
+        text-align: left;
+        padding: 18px 20px;
+        font-weight: 700;
+        text-transform: uppercase;
+        font-size: 13px;
+        letter-spacing: 0.1em;
+        border-bottom: 2px solid var(--primary-cyan);
+      }
+
+      td {
+        padding: 16px 20px;
+        border-bottom: 1px solid var(--border-color);
+        color: var(--text-secondary);
+        background: var(--bg-card);
+        transition: background 0.3s ease;
+      }
+
+      tr:hover td {
+        background: rgba(0, 242, 255, 0.05);
+      }
+
+      /* === TIMELINE === */
+      .timeline {
+        display: flex;
+        justify-content: space-between;
+        position: relative;
+        margin-top: 60px;
+        padding: 0 20px;
+      }
+
+      .timeline::before {
+        content: "";
+        position: absolute;
+        top: 20px;
+        left: 0;
+        width: 100%;
+        height: 3px;
+        background: linear-gradient(90deg, var(--primary-cyan), var(--primary-purple));
+        z-index: 0;
+        box-shadow: 0 0 10px var(--primary-cyan);
+      }
+
+      .step {
+        position: relative;
+        z-index: 1;
+        text-align: center;
+        flex: 1;
+        animation: stepFadeIn 0.6s ease-out both;
+      }
+
+      .step:nth-child(1) { animation-delay: 0.1s; }
+      .step:nth-child(2) { animation-delay: 0.2s; }
+      .step:nth-child(3) { animation-delay: 0.3s; }
+      .step:nth-child(4) { animation-delay: 0.4s; }
+      .step:nth-child(5) { animation-delay: 0.5s; }
+      .step:nth-child(6) { animation-delay: 0.6s; }
+
+      @keyframes stepFadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(-20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .dot {
+        width: 40px;
+        height: 40px;
+        background: var(--bg-darker);
+        border: 4px solid var(--primary-cyan);
+        border-radius: 50%;
+        margin: 0 auto 16px;
+        box-shadow: 
+          0 0 20px rgba(0, 242, 255, 0.6),
+          inset 0 0 10px rgba(0, 242, 255, 0.3);
+        animation: dotPulse 2s ease-in-out infinite;
+      }
+
+      @keyframes dotPulse {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.15); box-shadow: 0 0 30px rgba(0, 242, 255, 0.8); }
+      }
+
+      .step h3 {
+        font-size: 13px;
+        color: var(--text-primary);
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-bottom: 8px;
+      }
+      
+      .step p {
+        font-size: 11px;
+        color: var(--text-secondary);
+        line-height: 1.4;
+        max-width: 140px;
+        margin: 0 auto;
+        opacity: 0.9;
+        font-weight: 400;
+      }
+
+      /* === CODE BLOCKS (MAC STYLE) === */
+      .code-window {
+        background: #0f172a;
+        border-radius: 12px;
+        border: 1px solid #334155;
+        overflow: hidden;
+        font-family: "JetBrains Mono", monospace;
+        box-shadow: var(--shadow-strong);
+        text-align: left;
+        max-height: 450px;
+        display: flex;
+        flex-direction: column;
+      }
+      .window-header {
+        background: #1e293b;
+        padding: 10px 15px;
+        display: flex;
+        gap: 8px;
+        border-bottom: 1px solid #334155;
+        align-items: center;
+        flex-shrink: 0;
+      }
+      .w-dot { width: 12px; height: 12px; border-radius: 50%; }
+      .w-dot.red { background: #ef4444; }
+      .w-dot.yellow { background: #f59e0b; }
+      .w-dot.green { background: #22c55e; }
+      .code-content {
+        padding: 20px;
+        color: #a5b4fc;
+        font-size: 13px;
+        line-height: 1.5;
+        white-space: pre-wrap;
+        overflow-y: auto;
+      }
+      .keyword { color: #c084fc; }
+      .function { color: #22d3ee; }
+      .string { color: #86efac; }
+      .comment { color: #64748b; font-style: italic; }
+      .key { color: #93c5fd; } 
+      .number { color: #fca5a5; }
+      .boolean { color: #f9a8d4; }
+
+      /* === ICON DECORATIONS === */
+      .icon-decoration {
+        opacity: 0.15;
+        position: absolute;
+        pointer-events: none;
+        animation: iconFloat 15s ease-in-out infinite;
+      }
+
+      @keyframes iconFloat {
+        0%, 100% { transform: translate(0, 0) rotate(0deg); }
+        33% { transform: translate(20px, -20px) rotate(5deg); }
+        66% { transform: translate(-20px, 20px) rotate(-5deg); }
+      }
+      
+      /* === VERTICAL FLOWCHART (Slide 6) === */
+      .flow-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 12px;
+        height: 100%;
+        justify-content: center;
+      }
+      
+      .flow-node {
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        padding: 12px 25px;
+        border-radius: 8px;
+        min-width: 220px;
+        text-align: left;
+        position: relative;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+      }
+      
+      .flow-node:hover {
+        transform: scale(1.05) translateX(5px);
+        box-shadow: 0 0 20px rgba(0, 242, 255, 0.15);
+        border-color: var(--primary-cyan);
+      }
+      
+      .flow-node i {
+        font-size: 20px;
+        width: 25px;
+        text-align: center;
+      }
+      
+      .flow-node span {
+        font-family: "Space Grotesk", sans-serif;
+        font-weight: 700;
+        font-size: 16px;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--text-primary);
+      }
+      
+      .flow-arrow-vertical {
+        color: var(--text-secondary);
+        font-size: 16px;
+        opacity: 0.5;
+        animation: arrowPulseVertical 2s infinite;
+      }
+      
+      @keyframes arrowPulseVertical {
+        0%, 100% { transform: translateY(0); opacity: 0.3; }
+        50% { transform: translateY(4px); opacity: 0.8; }
+      }
+      
+      /* Distinct Node Colors */
+      .node-user { border-left: 4px solid var(--primary-cyan); }
+      .node-user i { color: var(--primary-cyan); }
+      
+      .node-frontend { border-left: 4px solid var(--primary-purple); }
+      .node-frontend i { color: var(--primary-purple); }
+      
+      .node-api { border-left: 4px solid var(--accent-pink); }
+      .node-api i { color: var(--accent-pink); }
+      
+      .node-model { border-left: 4px solid var(--success); }
+      .node-model i { color: var(--success); }
+      
+      .node-response { border-left: 4px solid var(--primary-cyan); }
+      .node-response i { color: var(--primary-cyan); }
+
+      /* === SLIDE 12 CUSTOM STYLES (MATCHING SCREENSHOT) === */
+      .result-input-group {
+        margin-bottom: 25px;
+      }
+      
+      .result-label {
+        font-size: 16px;
+        color: var(--text-secondary);
+        margin-bottom: 10px;
+        display: block;
+      }
+      
+      .result-input {
+        width: 100%;
+        background: rgba(30, 41, 59, 0.6);
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        padding: 18px;
+        font-family: "JetBrains Mono", monospace;
+        color: #fff;
+        font-size: 14px;
+        margin-bottom: 10px;
+      }
+      
+      .performance-card-large {
+        background: rgba(15, 23, 42, 0.6);
+        border: 1px solid var(--border-color);
+        border-radius: 16px;
+        height: 100%;
+        min-height: 320px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        box-shadow: var(--shadow-strong);
+        backdrop-filter: blur(10px);
+      }
+      
+      .perf-title {
+        color: var(--primary-cyan);
+        font-size: 28px;
+        font-weight: 700;
+        margin-bottom: 25px;
+      }
+      
+      .perf-value-large {
+        font-size: 96px;
+        font-weight: 700;
+        color: #fff;
+        line-height: 1;
+        margin-bottom: 15px;
+        text-shadow: 0 0 30px rgba(255,255,255,0.2);
+      }
+      
+      .perf-subtitle {
+        font-size: 16px;
+        color: var(--text-secondary);
+        text-transform: uppercase;
+        letter-spacing: 0.15em;
+        opacity: 0.7;
+      }
+
+
+      /* === NAVIGATION CONTROLS === */
+      #nav-controls {
+        position: fixed;
+        bottom: 35px;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        align-items: center;
+        gap: 25px;
+        z-index: 100;
+        background: rgba(10, 14, 39, 0.95);
+        padding: 12px 30px;
+        border-radius: 60px;
+        border: 1px solid var(--border-color);
+        backdrop-filter: blur(20px);
+        box-shadow: 
+          0 10px 40px rgba(0, 0, 0, 0.6),
+          0 0 20px rgba(0, 242, 255, 0.1);
+      }
+
+      .nav-btn {
+        background: transparent;
+        border: none;
+        color: var(--text-primary);
+        font-size: 24px;
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        display: flex;
+        align-items: center;
+        padding: 8px;
+        border-radius: 50%;
+      }
+
+      .nav-btn:hover:not(:disabled) {
+        color: var(--primary-cyan);
+        transform: scale(1.2);
+        background: rgba(0, 242, 255, 0.1);
+      }
+
+      .nav-btn:disabled {
+        color: var(--border-color);
+        cursor: not-allowed;
+        opacity: 0.3;
+      }
+
+      #slide-counter {
+        font-family: "JetBrains Mono", monospace;
+        color: var(--text-secondary);
+        font-size: 16px;
+        min-width: 140px;
+        text-align: center;
+        font-weight: 600;
+        letter-spacing: 0.05em;
+      }
+
+      #progress-bar {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        height: 5px;
+        background: linear-gradient(90deg, var(--primary-cyan), var(--primary-purple), var(--accent-pink));
+        width: 0%;
+        transition: width 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        z-index: 101;
+        box-shadow: 0 0 20px rgba(0, 242, 255, 0.6);
+      }
+
+      /* === RESPONSIVE === */
+      @media (max-width: 1300px) {
+        #presentation-wrapper {
+          transform: scale(0.8);
+        }
+      }
+
+      @media (max-width: 1000px) {
+        #presentation-wrapper {
+          transform: scale(0.65);
+        }
+      }
+
+      /* === SPECIAL EFFECTS === */
+      .glow-text {
+        text-shadow: 0 0 20px rgba(0, 242, 255, 0.5);
+      }
+
+      .metric-card {
+        background: var(--bg-card);
+        padding: 30px;
+        border-radius: 16px;
+        border: 1px solid var(--border-color);
+        text-align: center;
+        transition: all 0.4s ease;
+        backdrop-filter: blur(10px);
+      }
+
+      .metric-card:hover {
+        transform: translateY(-5px);
+        border-color: var(--primary-cyan);
+        box-shadow: var(--shadow-glow);
+      }
+
+      .metric-value {
+        font-size: 48px;
+        font-weight: 700;
+        background: linear-gradient(135deg, var(--primary-cyan), var(--primary-purple));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 10px;
+      }
+
+      .badge {
+        display: inline-block;
+        padding: 8px 16px;
+        border-radius: 20px;
+        font-size: 13px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin: 5px;
+      }
+
+      .badge-cyan {
+        background: rgba(0, 242, 255, 0.15);
+        color: var(--primary-cyan);
+        border: 1px solid var(--primary-cyan);
+      }
+
+      .badge-purple {
+        background: rgba(188, 19, 254, 0.15);
+        color: var(--primary-purple);
+        border: 1px solid var(--primary-purple);
+      }
+
+      .badge-pink {
+        background: rgba(255, 0, 110, 0.15);
+        color: var(--accent-pink);
+        border: 1px solid var(--accent-pink);
+      }
+    </style>
+  </head>
+  <body>
+    <div id="presentation-wrapper">
+      <div class="slide-container active" id="slide1">
+        <div class="content-area" style="text-align: center; justify-content: center;">
+          <div style="margin-bottom: 40px;">
+            <i class="fa-solid fa-shield-halved" style="font-size: 120px; color: var(--primary-cyan); filter: drop-shadow(0 0 30px rgba(0, 242, 255, 0.6)); animation: iconFloat 6s ease-in-out infinite;"></i>
+          </div>
+          <h1 style="margin-bottom: 20px;">
+            Phishing Website Detection<br/>
+            <span style="font-size: 0.8em;">Using Machine Learning</span>
+          </h1>
+          <div style="margin: 30px 0;">
+            <span class="badge badge-cyan">Machine Learning</span>
+            <span class="badge badge-purple">React</span>
+            <span class="badge badge-pink">Flask API</span>
+          </div>
+          <p style="font-size: 20px; color: var(--primary-purple); font-weight: 600; margin-top: 30px; letter-spacing: 0.15em; text-transform: uppercase;">
+            B.Tech CSE - AIML • 2025-2026
+          </p>
+          <div style="margin-top: 50px; color: var(--text-secondary); font-size: 16px;">
+            <strong style="color: var(--text-primary);">Team:</strong> Akarsh Raj • Arnav Raj • Alok Kumar Das • Nirbhay Anand • Shubhra Dutt<br/>
+            <span style="opacity: 0.7;">Haldia Institute of Technology | Dept. of CSE-AIML</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="slide-container" id="slide2">
+        <h2 class="slide-title">Team & Roles</h2>
+        <div class="content-area">
+          <div class="team-grid">
+            <div class="team-card">
+              <i class="fa-solid fa-brain"></i>
+              <span class="role">ML Scientist</span>
+              <h3>Akarsh Raj</h3>
+              <p style="font-size: 13px; margin: 8px 0; line-height: 1.4; color: var(--text-secondary);">
+                "The brain behind the bot. Trains the model to sniff out scams."
+              </p>
+              <span class="id">10330823006</span>
+            </div>
+            <div class="team-card">
+              <i class="fa-solid fa-database"></i>
+              <span class="role">Data Engineer</span>
+              <h3>Arnav Raj</h3>
+              <p style="font-size: 13px; margin: 8px 0; line-height: 1.4; color: var(--text-secondary);">
+                "The pipeline pro. Feeds the beast with clean, structured data."
+              </p>
+              <span class="id">10330823025</span>
+            </div>
+            <div class="team-card">
+              <i class="fa-solid fa-palette"></i>
+              <span class="role">Frontend Dev</span>
+              <h3>Alok Kumar Das</h3>
+              <p style="font-size: 13px; margin: 8px 0; line-height: 1.4; color: var(--text-secondary);">
+                "The pixel perfectionist. Cooked up a UI to make sure the anti-scam tech drips hard."
+              </p>
+              <span class="id">10330823010</span>
+            </div>
+            <div class="team-card">
+              <i class="fa-solid fa-rocket"></i>
+              <span class="role">DevOps Eng.</span>
+              <h3>Nirbhay Anand</h3>
+              <p style="font-size: 13px; margin: 8px 0; line-height: 1.4; color: var(--text-secondary);">
+                "The deployment maestro. Keeps the servers running and the code shipping."
+              </p>
+              <span class="id">10330823062</span>
+            </div>
+            <div class="team-card">
+              <i class="fa-brands fa-python"></i>
+              <span class="role">Backend Dev</span>
+              <h3>Shubhra Dutt</h3>
+              <p style="font-size: 13px; margin: 8px 0; line-height: 1.4; color: var(--text-secondary);">
+                "The engine builder. Connects the dots and powers the API."
+              </p>
+              <span class="id">10330823100</span>
+            </div>
+          </div>
+          <div style="text-align: center; margin-top: 30px; opacity: 0.1;">
+            <i class="fa-solid fa-network-wired icon-decoration" style="font-size: 140px;"></i>
+          </div>
+        </div>
+      </div>
+
+      <div class="slide-container" id="slide3" style="padding: 40px 80px;">
+        <h2 class="slide-title">Abstract</h2>
+        <div class="content-area">
+          <div class="two-column" style="gap: 30px;">
+            <div>
+              <ul class="styled-list">
+                <li style="margin-bottom: 10px; font-size: 16px;">
+                  <strong>System Overview:</strong> A Flask-based web application leveraging supervised machine learning for real-time phishing URL detection with 93.6% accuracy.
+                </li>
+                <li style="margin-bottom: 10px; font-size: 16px;">
+                  <strong>Problem Domain:</strong> Addresses escalating phishing threats by classifying URLs as benign or malicious using 12 extracted features.
+                </li>
+                <li style="margin-bottom: 10px; font-size: 16px;">
+                  <strong>Key Components:</strong> Advanced feature engineering from URL attributes, model inference via REST API, and intuitive user interface.
+                </li>
+                <li style="margin-bottom: 10px; font-size: 16px;">
+                  <strong>Technical Stack:</strong> Employs Scikit-learn, Pandas, and Flask for a scalable, production-ready cybersecurity ML pipeline.
+                </li>
+              </ul>
+            </div>
+            <div class="image-wrapper">
+              <div style="padding: 40px; text-align: center;">
+                <div style="margin-bottom: 20px;">
+                  <i class="fa-solid fa-link" style="font-size: 40px; color: var(--primary-cyan);"></i>
+                  <p style="margin-top: 10px; font-size: 14px;"><strong>Input URL</strong></p>
+                </div>
+                <i class="fa-solid fa-arrow-down" style="font-size: 24px; color: var(--primary-purple); margin: 15px 0;"></i>
+                <div style="margin: 20px 0;">
+                  <i class="fa-solid fa-gears" style="font-size: 40px; color: var(--primary-cyan);"></i>
+                  <p style="margin-top: 10px; font-size: 14px;"><strong>ML Processing</strong></p>
+                </div>
+                <i class="fa-solid fa-arrow-down" style="font-size: 24px; color: var(--primary-purple); margin: 15px 0;"></i>
+                <div style="margin-top: 20px;">
+                  <i class="fa-solid fa-check-circle" style="font-size: 40px; color: var(--success);"></i>
+                  <p style="margin-top: 10px; font-size: 14px;"><strong>Prediction Result</strong></p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="slide-container" id="slide4">
+        <h2 class="slide-title">Problem Statement</h2>
+        <div class="content-area">
+          <div class="two-column">
+            <div>
+              <div style="margin-bottom: 30px;">
+                <h3 style="color: var(--danger); font-size: 24px; margin-bottom: 15px;">
+                  <i class="fa-solid fa-exclamation-triangle"></i> Rising Threat
+                </h3>
+                <p>Phishing attacks surged by <strong>65% in 2023</strong>, exploiting URL manipulation to deceive users and steal sensitive data.</p>
+              </div>
+              <div style="margin-bottom: 30px;">
+                <h3 style="color: var(--warning); font-size: 24px; margin-bottom: 15px;">
+                  <i class="fa-solid fa-shield-virus"></i> Detection Challenges
+                </h3>
+                <p>Static blacklists fail against zero-day URLs. Manual inspection is unscalable for enterprise-level traffic volumes.</p>
+              </div>
+              <div>
+                <h3 style="color: var(--success); font-size: 24px; margin-bottom: 15px;">
+                  <i class="fa-solid fa-robot"></i> Need for Automation
+                </h3>
+                <p>ML-based classification analyzes granular features like entropy, domain age, and SSL legitimacy for real-time detection.</p>
+              </div>
+            </div>
+            <div class="image-wrapper" style="background: rgba(255, 255, 255, 0.95);">
+              <div class="phishing-mock">
+                <div class="phishing-header">
+                  <strong>From:</strong> Security Team &lt;<span class="suspicious-highlight" data-reason="Typosquatting: 'pay-pal' instead of 'paypal'">support@pay-pal-security.net</span>&gt;<br/>
+                  <strong>To:</strong> valued.customer@example.com
+                </div>
+                <div class="phishing-subject">
+                  🚨 Urgent: Your account has been limited
+                </div>
+                <div class="phishing-body">
+                  Dear Valued Customer,<br/><br/>
+                  We detected <strong>unusual activity</strong> on your account. To prevent unauthorized access, we have temporarily restricted your account features.<br/><br/>
+                  Please verify your identity immediately:<br/>
+                  <a href="#" class="phishing-btn" onclick="return false;">Secure Login Now</a>
+                  <br/><br/>
+                  <span style="font-size: 11px; color: #999;">
+                    Actual link: <span class="suspicious-highlight" data-reason="Suspicious IP address instead of legitimate domain">http://192.168.1.104/verify/auth.php?token=xj29dk</span>
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="slide-container" id="slide5">
+        <h2 class="slide-title">Literature Review</h2>
+        <div class="content-area">
+          <p style="margin-bottom: 35px; font-size: 20px;">
+            <strong>Comparative Analysis</strong> of Detection Methodologies:
+          </p>
+          <div class="bar-track">
+            <div class="bar-fill" style="width: 70%;">
+              Blacklist Methods (70-80% Accuracy)
+            </div>
+          </div>
+          <div class="bar-track">
+            <div class="bar-fill" style="width: 85%; background: linear-gradient(90deg, var(--warning), var(--primary-purple));">
+              Heuristic-Based Approaches (85%)
+            </div>
+          </div>
+          <div class="bar-track">
+            <div class="bar-fill" style="width: 93.6%;">
+              ML-Based Solutions (93%+ Accuracy)
+            </div>
+          </div>
+          <div style="margin-top: 50px; padding: 25px; background: var(--bg-card); border-radius: 12px; border-left: 4px solid var(--primary-cyan);">
+            <p style="font-size: 18px;">
+              <strong>Research Gap Addressed:</strong> Our system bridges the gap between offline academic models and real-time production inference by integrating dynamic feature engineering directly into the API layer, enabling <strong>sub-500ms response times</strong>.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="slide-container" id="slide6">
+        <h2 class="slide-title">System Architecture</h2>
+        <div class="content-area">
+          <div class="two-column">
+            <div class="flow-container">
+              <div class="flow-node node-user">
+                <i class="fa-solid fa-user"></i>
+                <span>User Input</span>
+              </div>
+              <i class="fa-solid fa-arrow-down flow-arrow-vertical"></i>
+              
+              <div class="flow-node node-frontend">
+                <i class="fa-solid fa-desktop"></i>
+                <span>Frontend UI</span>
+              </div>
+              <i class="fa-solid fa-arrow-down flow-arrow-vertical"></i>
+              
+              <div class="flow-node node-api">
+                <i class="fa-solid fa-server"></i>
+                <span>Flask API</span>
+              </div>
+              <i class="fa-solid fa-arrow-down flow-arrow-vertical"></i>
+              
+              <div class="flow-node node-model">
+                <i class="fa-solid fa-brain"></i>
+                <span>ML Model</span>
+              </div>
+              <i class="fa-solid fa-arrow-down flow-arrow-vertical"></i>
+              
+              <div class="flow-node node-response">
+                <i class="fa-solid fa-envelope-open-text"></i>
+                <span>JSON Response</span>
+              </div>
+            </div>
+            
+            <div>
+              <ul class="styled-list">
+                <li>
+                  <strong>User Interaction:</strong> Responsive frontend captures URL input via modern web form with client-side validation.
+                </li>
+                <li>
+                  <strong>API Layer:</strong> Flask application handles POST requests and routes to feature extraction pipeline.
+                </li>
+                <li>
+                  <strong>Processing Pipeline:</strong> Extracts 12 features including domain age, SSL status, URL entropy, and special character counts.
+                </li>
+                <li>
+                  <strong>Security Measures:</strong> Input sanitization, rate limiting, HTTPS enforcement, and CORS protection.
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="slide-container" id="slide7">
+        <h2 class="slide-title">Dataset & Feature Engineering</h2>
+        <div class="content-area">
+          <p style="margin-bottom: 25px;">
+            <strong>Dataset Source:</strong> UCI Phishing Websites Dataset with <strong>12 engineered features</strong>
+          </p>
+          <table>
+            <thead>
+              <tr>
+                <th>Feature Name</th>
+                <th>Technical Implementation</th>
+                <th>Anomaly Threshold</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>URL Length</td>
+                <td><span class="tech-code">len(url)</span></td>
+                <td>&gt; 75 characters</td>
+              </tr>
+              <tr>
+                <td>Special Characters</td>
+                <td><span class="tech-code">re.findall(r'[@\-//]', url)</span></td>
+                <td>Excessive counts (>5)</td>
+              </tr>
+              <tr>
+                <td>HTTPS Status</td>
+                <td><span class="tech-code">urlparse(url).scheme</span></td>
+                <td>Binary 0 (Non-secure)</td>
+              </tr>
+              <tr>
+                <td>Domain Entropy</td>
+                <td><span class="tech-code">Shannon entropy calculation</span></td>
+                <td>Random string detection</td>
+              </tr>
+              <tr>
+                <td>Subdomain Count</td>
+                <td><span class="tech-code">domain.count('.')</span></td>
+                <td>&gt; 3 subdomains</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="slide-container" id="slide8">
+        <h2 class="slide-title">Machine Learning Model</h2>
+        <div class="content-area">
+          <div class="two-column">
+            <div>
+              <div style="margin-bottom: 30px;">
+                <h3 style="font-size: 22px; color: var(--primary-cyan); margin-bottom: 15px;">
+                  <i class="fa-solid fa-chart-line"></i> Algorithm Selection
+                </h3>
+                <p><strong>Gradient Boosting Classifier</strong> (Scikit-learn) selected for sequential error reduction and superior performance on imbalanced datasets.</p>
+              </div>
+              <div style="margin-bottom: 30px;">
+                <h3 style="font-size: 22px; color: var(--primary-purple); margin-bottom: 15px;">
+                  <i class="fa-solid fa-flask"></i> Training Process
+                </h3>
+                <p><strong>3-fold Cross-validation</strong> with GridSearchCV for hyperparameter optimization. Training set: 80%, Test set: 20%.</p>
+              </div>
+              <div>
+                <h3 style="font-size: 22px; color: var(--accent-pink); margin-bottom: 15px;">
+                  <i class="fa-solid fa-save"></i> Model Serialization
+                </h3>
+                <p>Used <strong>Pickle and Dill</strong> libraries for secure model serialization, ensuring version compatibility and deployment stability.</p>
+              </div>
+            </div>
+            <div>
+              <div class="metric-card" style="margin-bottom: 20px;">
+                <div class="metric-value">93.6%</div>
+                <p style="color: var(--text-secondary);">Model Accuracy</p>
+              </div>
+              <div class="bar-track">
+                <div class="bar-fill" style="width: 93.6%;">
+                  Accuracy
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="slide-container" id="slide9">
+        <h2 class="slide-title">Backend Logic</h2>
+        <div class="content-area">
+            <div class="code-window">
+                <div class="window-header">
+                    <div class="w-dot red"></div><div class="w-dot yellow"></div><div class="w-dot green"></div>
+                    <div style="margin-left: 10px; font-size: 12px; color: #64748b;">app.py</div>
+                </div>
+                <div class="code-content">
+<span class="keyword">@app.route</span>(<span class="string">'/predict'</span>, methods=[<span class="string">'POST'</span>])
+<span class="keyword">def</span> <span class="function">predict</span>():
+    data = request.get_json()
+    url = data.get(<span class="string">'url'</span>)
+
+    <span class="keyword"># 1. Feature Extraction</span>
+    features = get_prediction_features(url)
+    cols = [
+        <span class="string">"having_IP_Address"</span>, <span class="string">"Prefix_Suffix"</span>, 
+        <span class="string">"SSLfinal_State"</span>, 
+        <span class="comment"># ... (full list of 12 features)</span>
+    ]
+    
+    <span class="keyword"># 2. DataFrame Creation</span>
+    features_df = pd.DataFrame(features, columns=cols)
+
+    <span class="keyword"># 3. Model Inference</span>
+    prediction = model.predict(features_df)
+    probabilities = model.predict_proba(features_df)
+    
+    confidence = np.max(probabilities) * 100 
+    result = <span class="string">"Phishing"</span> <span class="keyword">if</span> prediction[0] == 1 <span class="keyword">else</span> <span class="string">"Safe"</span>
+
+    <span class="keyword">return</span> jsonify({
+        <span class="string">"url"</span>: url,
+        <span class="string">"prediction"</span>: result,
+        <span class="string">"confidence"</span>: round(confidence, 2)
+    })
+                </div>
+            </div>
+        </div>
+      </div>
+
+      <div class="slide-container" id="slide10" style="padding: 40px 80px;">
+        <h2 class="slide-title">CI/CD & Deployment</h2>
+        <div class="content-area">
+          <div class="two-column" style="gap: 30px;">
+            <div style="text-align: center; padding: 20px;">
+              <div style="margin-bottom: 25px;">
+                <i class="fa-brands fa-github" style="font-size: 60px; color: var(--text-primary);"></i>
+                <p style="margin-top: 10px; font-weight: 600;">Version Control</p>
+              </div>
+              <i class="fa-solid fa-arrow-down" style="font-size: 25px; color: var(--primary-cyan); margin: 15px 0;"></i>
+              <div style="margin-bottom: 25px;">
+                <i class="fa-solid fa-code-branch" style="font-size: 60px; color: var(--primary-cyan);"></i>
+                <p style="margin-top: 10px; font-weight: 600;">CI/CD Pipeline</p>
+              </div>
+              <i class="fa-solid fa-arrow-down" style="font-size: 25px; color: var(--primary-purple); margin: 15px 0;"></i>
+              <div>
+                <i class="fa-solid fa-cloud-upload" style="font-size: 60px; color: var(--primary-purple);"></i>
+                <p style="margin-top: 10px; font-weight: 600;">Live Deployment</p>
+              </div>
+            </div>
+            <div>
+              <ul class="styled-list">
+                <li style="margin-bottom: 15px;">
+                  <strong>Version Control:</strong> Git workflow with <span class="tech-code">main</span> and <span class="tech-code">dev</span> branching strategy on GitHub.
+                </li>
+                <li style="margin-bottom: 15px;">
+                  <strong>Runtime Environment:</strong> Standard Python <span class="tech-code">3.10.13</span> environment managed via <span class="tech-code">requirements.txt</span>.
+                </li>
+                <li style="margin-bottom: 15px;">
+                  <strong>Local Validation:</strong> Rigorous manual testing of API endpoints and UI components in development environment before deployment.
+                </li>
+                <li style="margin-bottom: 15px;">
+                  <strong>Dual Deployment:</strong> Backend API hosted on <span class="tech-code">Render</span> and Frontend statically served via <span class="tech-code">GitHub Pages</span>.
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="slide-container" id="slide11">
+        <h2 class="slide-title">Project Workflow</h2>
+        <div class="content-area">
+          <div class="timeline">
+            <div class="step">
+              <div class="dot"></div>
+              <h3>Data<br/>Collection</h3>
+              <p>Aggregated 11k+ URLs from UCI Machine Learning Repository.</p>
+            </div>
+            <div class="step">
+              <div class="dot"></div>
+              <h3>Data<br/>Preprocessing</h3>
+              <p>Cleaned raw data and engineered 12 distinctive features.</p>
+            </div>
+            <div class="step">
+              <div class="dot"></div>
+              <h3>Model<br/>Training</h3>
+              <p>Trained Gradient Boosting with 3-fold cross-validation.</p>
+            </div>
+            <div class="step">
+              <div class="dot"></div>
+              <h3>Model<br/>Serialization</h3>
+              <p>Serialized trained model using Pickle and dill for production use.</p>
+            </div>
+            <div class="step">
+              <div class="dot"></div>
+              <h3>API<br/>Integration</h3>
+              <p>Developed RESTful Flask endpoints to serve JSON predictions.</p>
+            </div>
+            <div class="step">
+              <div class="dot"></div>
+              <h3>Testing &<br/>Deployment</h3>
+              <p>Validated locally before deploying to Render & GitHub Pages.</p>
+            </div>
+          </div>
+          <div style="margin-top: 80px; text-align: center;">
+            <i class="fa-solid fa-gears icon-decoration" style="font-size: 140px; opacity: 0.2;"></i>
+          </div>
+        </div>
+      </div>
+
+      <div class="slide-container" id="slide12">
+        <h2 class="slide-title" style="border-left: 5px solid var(--primary-cyan); padding-left: 20px;">Live Demo Result</h2>
+        <div class="content-area">
+          <div class="two-column" style="align-items: flex-start;">
+            <div>
+              <div class="result-input-group">
+                <label class="result-label">Input URL:</label>
+                <div class="result-input">https://secure-bank-login.net/auth</div>
+              </div>
+              
+              <div class="result-input-group">
+                <label class="result-label">API Response:</label>
+                <div class="code-window" style="height: 220px; box-shadow: none; border: 1px solid var(--border-color);">
+                    <div class="window-header" style="background: rgba(15, 23, 42, 0.8);">
+                        <div class="w-dot red"></div><div class="w-dot yellow"></div><div class="w-dot green"></div>
+                        <div style="margin-left: 10px; font-size: 11px; color: #64748b;">JSON Output</div>
+                    </div>
+                    <div class="code-content" style="padding: 15px; font-size: 13px;">
+{
+  <span class="key">"url"</span>: <span class="string">"https://secure-bank-login.net/auth"</span>,
+  <span class="key">"prediction"</span>: <span class="string">"phishing"</span>,
+  <span class="key">"confidence"</span>: <span class="number">99.49</span>,
+}
+                    </div>
+                </div>
+              </div>
+            </div>
+            
+            <div>
+               <div class="performance-card-large">
+                  <h3 class="perf-title">Agg. Confidence Rate</h3>
+                  <div class="perf-value-large">>99%</div>
+                  <div class="perf-subtitle">CONSISTENTLY</div>
+               </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="slide-container" id="slide13">
+        <h2 class="slide-title">Challenges Overcome</h2>
+        <div class="content-area">
+          <div class="two-column">
+            <div>
+              <ul class="styled-list">
+                <li>
+                  <strong>Pipeline Orchestration:</strong> Complexities in automating the workflow between data ingestion, transformation, and model training (Hyperparameter Tuning).
+                </li>
+                <li>
+                  <strong>Dataset Quality & Feature Selection:</strong> Difficulty in sourcing balanced phishing datasets and isolating high-impact features from noisy data.
+                </li>
+                <li>
+                  <strong>Responsive Animation & Optimization:</strong> Prevented premature animation triggers on mobile devices before content visibility.
+                </li>
+                <li>
+                  <strong>Model Serving & CI/CD:</strong> Optimized background animations to ensure uniform density and stable rendering across all resolutions.
+                </li>
+                <li>
+                  <strong>API Latency:</strong> Ensuring the API handles heavy inference loads and returns predictions in sub-second time (<500MS).
+                </li>
+              </ul>
+            </div>
+            <div style="text-align: center; display: flex; flex-direction: column; justify-content: center; align-items: center;">
+              <i class="fa-solid fa-triangle-exclamation" style="font-size: 180px; color: var(--danger); opacity: 0.8; animation: iconFloat 8s ease-in-out infinite;"></i>
+              <p style="margin-top: 30px; color: var(--danger); font-weight: 700; font-size: 24px; letter-spacing: 0.1em; text-transform: uppercase;">
+                Technical Hurdles
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="slide-container" id="slide15">
+        <div class="content-area" style="text-align: center; justify-content: center;">
+          <i class="fa-solid fa-shield-check" style="font-size: 120px; color: var(--success); margin-bottom: 40px; filter: drop-shadow(0 0 30px rgba(16, 185, 129, 0.6)); animation: iconFloat 6s ease-in-out infinite;"></i>
+          <h2 class="glow-text" style="font-size: 64px; margin-bottom: 30px;">Conclusion</h2>
+          <p style="max-width: 900px; margin: 0 auto 40px; font-size: 22px; color: var(--text-primary); line-height: 1.8;">
+            Supervised machine learning <strong>effectively automates phishing detection</strong>, reducing manual security overhead by <strong>70%</strong>. Our end-to-end pipeline validates the feasibility of deploying ML models from data collection to production cloud deployment.
+          </p>
+          <div style="margin-top: 60px;">
+            <span class="badge badge-cyan" style="font-size: 15px; padding: 12px 24px;">93.6% Accuracy</span>
+            <span class="badge badge-purple" style="font-size: 15px; padding: 12px 24px;">&lt;500ms Response</span>
+            <span class="badge badge-pink" style="font-size: 15px; padding: 12px 24px;">Production Ready</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="progress-bar"></div>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const slides = document.querySelectorAll(".slide-container");
+        const progressBar = document.getElementById("progress-bar");
+        let currentIndex = 0;
+
+        function updateSlide() {
+          // Toggle active class for slides
+          slides.forEach((slide, index) => {
+            if (index === currentIndex) {
+              slide.classList.add("active");
+            } else {
+              slide.classList.remove("active");
+            }
+          });
+
+          // Update Progress Bar (if it exists)
+          if (progressBar) {
+            const progress = ((currentIndex + 1) / slides.length) * 100;
+            progressBar.style.width = `${progress}%`;
+          }
+        }
+
+        // Keyboard Navigation Listener
+        document.addEventListener("keydown", (e) => {
+          // Next Slide: Right Arrow, Space, Enter
+          if (e.key === "ArrowRight" || e.key === " " || e.key === "Enter") {
+            e.preventDefault(); // Prevent scrolling
+            if (currentIndex < slides.length - 1) {
+              currentIndex++;
+              updateSlide();
+            }
+          } 
+          // Previous Slide: Left Arrow, Backspace
+          else if (e.key === "ArrowLeft" || e.key === "Backspace") {
+            e.preventDefault();
+            if (currentIndex > 0) {
+              currentIndex--;
+              updateSlide();
+            }
+          } 
+          // First Slide: Home
+          else if (e.key === "Home") {
+            e.preventDefault();
+            currentIndex = 0;
+            updateSlide();
+          } 
+          // Last Slide: End
+          else if (e.key === "End") {
+            e.preventDefault();
+            currentIndex = slides.length - 1;
+            updateSlide();
+          }
+        });
+
+        // Initialize first slide
+        updateSlide();
+      });
+    </script>
+  </body>
+</html>
